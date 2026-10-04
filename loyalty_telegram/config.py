@@ -12,5 +12,6 @@ BACKEND_POINT = "/telegram"
 
 API_REQUESTS = {
     "test" : BACKEND_POINT + "/test/",
-    "user_reg" : BACKEND_POINT + "/registration/"
+    "user_reg" : BACKEND_POINT + "/registration/",
+    "user_status" : BACKEND_POINT + "/client_status/{}",
 }

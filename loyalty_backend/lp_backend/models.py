@@ -11,8 +11,8 @@ class OperationType(models.TextChoices):
 
 class Client(models.Model):
     name = models.CharField(max_length=100, verbose_name='Client Name')
-    phone_number = models.CharField(max_length=20, verbose_name='Client Phone Number')
-    telegram_id = models.BigIntegerField(verbose_name='Client Telegram ID')
+    phone_number = models.CharField(unique=True, max_length=20, verbose_name='Client Phone Number')
+    telegram_id = models.BigIntegerField(unique=True, verbose_name='Client Telegram ID')
     total_spent = models.IntegerField(default=0, verbose_name='Total Spent')
     last_operation_date = models.DateField(null=True, blank=True, verbose_name='Last Operation Date')
     registered_at = models.DateField(auto_now_add=True, verbose_name='Registered Date')
