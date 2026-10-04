@@ -1,9 +1,16 @@
-from django.shortcuts import render
+from django.http import JsonResponse
 
-from pl_backend.services import register_new_user
+from lp_backend.services import register_new_user
 # Create your views here.
 
-def register_user_view(request):
+def test_view(request):
+    if request.method == 'POST':
+        # Здесь ваша логика обработки
+        return JsonResponse({'status': 'success', 'message': 'Данные приняты!'})
+
+    return JsonResponse({'status': 'error', 'message': 'Метод не поддерживается'}, status=400)
+
+def registration_user_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         number = request.POST.get('phone_number')

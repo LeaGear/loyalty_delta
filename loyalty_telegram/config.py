@@ -1,0 +1,16 @@
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+TOKEN = os.getenv("TELEGRAM_TOKEN")
+
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+
+BACKEND_POINT = "/telegram"
+
+API_REQUESTS = {
+    "test" : BACKEND_POINT + "/test/",
+    "user_reg" : BACKEND_POINT + "/registration/"
+}
