@@ -1,4 +1,4 @@
-
+from datetime import datetime
 
 from logic.api_client import get_user_data
 
@@ -10,7 +10,8 @@ async def get_user_info(user_id):
         message = (f"Client: {actual_data.get('name')}\n"
                    f"\n"
                    f"Total spent: {actual_data.get('total_spent')}\n"
-                   f"Discount Value --> {actual_data.get('discount_value') if actual_data.get('discount_value') else 0}%\n"
+                   f"Your Tier ->> {actual_data.get('discount_level')}\n"
+                   f"Discount Value --> {0 if actual_data.get('discount') is None else actual_data.get('discount') }%\n"
                    f"\n"
-                   f"Last operation: {actual_data.get('last_operation') if actual_data.get('last_operation') else 'Not found'}\n")
+                   f"Last operation: {'not found' if actual_data.get('last_visit')  is None else actual_data.get('last_visit')}\n")
         return message

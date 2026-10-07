@@ -1,8 +1,8 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
 
-from lp_backend.models import Client, Operation
+from lp_backend.models import Client, Operation, DiscountTier
 # Register your models here.
 
 admin.site.register(Client)
 admin.site.register(Operation)
+admin.site.register(DiscountTier)

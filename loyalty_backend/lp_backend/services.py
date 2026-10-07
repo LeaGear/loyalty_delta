@@ -1,8 +1,6 @@
-
-from django.db import transaction
 from django.http import JsonResponse
 
-from lp_backend.models import Client, Operation
+from lp_backend.models import Client, Operation, DiscountTier
 
 
 def register_new_user(username, number, telegram_id):
@@ -14,16 +12,9 @@ def register_new_user(username, number, telegram_id):
         )
         return JsonResponse({'status':'success', 'detail': 'Client registered'},status=200)
     except Exception as e:
-        return JsonResponse({'status':'error', 'detail': str(e)},status=400)
-
-def get_user_discount_code():
-    pass
-
-def add_new_operation():
-    pass
+        return JsonResponse({'status':'error', 'detail': str(e)}, status=400)
 
 def client_status(client_id):
-    print(client_id)
     try:
         Client.objects.get(telegram_id=client_id)
         return JsonResponse({
@@ -43,12 +34,17 @@ def get_user_code(user_id): #TODO: In future returning code instead id
 
 def get_user_data(user_id):
     client = Client.objects.get(telegram_id=user_id)
+    actual_discount = get_actual_discount(client.total_spent)
     user_data = {
         'name': client.name,
         'phone_number': client.phone_number,
         'total_spent': client.total_spent,
-        'discount': client.discount_value,
+        'discount_level': actual_discount.name,
+        'discount': actual_discount.discount_percent,
         'last_visit': client.last_operation_date
     }
-    print(user_data)
     return user_data
+
+def get_actual_discount(total_spent):
+    discount = DiscountTier.objects.filter(min_total__lte=total_spent).first()
+    return discount
