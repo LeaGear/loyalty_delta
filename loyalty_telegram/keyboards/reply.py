@@ -2,7 +2,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, KeyboardButtonReq
 
 reg_keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="Registration")]
+        [KeyboardButton(text="/register")]
     ],
     resize_keyboard=True
 )

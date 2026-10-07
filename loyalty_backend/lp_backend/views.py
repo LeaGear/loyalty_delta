@@ -4,7 +4,7 @@ from json import JSONDecodeError
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from lp_backend.services import register_new_user, client_status
+from lp_backend.services import register_new_user, client_status, get_user_code, get_user_data
 # Create your views here.
 
 def test_view(request):
@@ -31,3 +31,16 @@ def check_user_status_view(request, user_id):
         result = client_status(user_id)
         return result
     return JsonResponse({'status': 'error', 'detail': 'Method not allowed'}, status=400)
+
+def get_user_loyalty_code_view(request, user_id):
+    if request.method == 'GET':
+        code = get_user_code(user_id)
+        return JsonResponse({'status': 'success', 'data': code}, status=200)
+    return JsonResponse({'status': 'error', 'detail': 'Method not allowed'}, status=400)
+
+def get_user_data_view(request, user_id):
+    if request.method == 'GET':
+        data = get_user_data(user_id)
+        print(f"view data: {data}")
+        return JsonResponse({'status': 'success', 'detail':'', 'data': data}, status=200)
+    return JsonResponse({'status': 'error', 'detail': 'Method not allowed', 'data': None}, status=400)

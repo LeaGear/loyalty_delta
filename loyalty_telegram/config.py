@@ -14,4 +14,6 @@ API_REQUESTS = {
     "test" : BACKEND_POINT + "/test/",
     "user_reg" : BACKEND_POINT + "/registration/",
     "user_status" : BACKEND_POINT + "/client_status/{}",
+    "get_user_code" : BACKEND_POINT + "/loyalty_code/{}",
+    "user_data" : BACKEND_POINT + "/user_data/{}",
 }

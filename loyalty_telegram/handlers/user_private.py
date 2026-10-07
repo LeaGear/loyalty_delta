@@ -1,20 +1,26 @@
 from aiogram import F, types, Router
 from aiogram.filters import CommandStart
+from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardRemove
 
-from logic.api_client import registration_new_client, check_user_status
+from logic.api_client import registration_new_client, check_user_status, get_user_loyalty_code
+from logic.services import get_user_info
 from keyboards.reply import main_keyboard, reg_keyboard, share_contact_keyboard
+from middlewares.registered import RegisteredOnlyMiddleware
 
-user_private_router = Router()
+user_private_public_router = Router()
+user_private_protected_router = Router()
+
+user_private_protected_router.message.outer_middleware(RegisteredOnlyMiddleware())
 
 class RegistrationNewClientState(StatesGroup):
     user_phone_number = State()
     user_name = State()
     user_id = State()
 
-@user_private_router.message(CommandStart())
+@user_private_public_router.message(CommandStart())
 async def start_cmd(message: types.Message, state: FSMContext):
     await state.clear()
     response = await check_user_status(message.from_user.id)
@@ -24,7 +30,7 @@ async def start_cmd(message: types.Message, state: FSMContext):
     else:
         await message.answer(f"Hello, {message.from_user.first_name}!", reply_markup=reg_keyboard)
 
-@user_private_router.message(F.text == 'Registration')
+@user_private_public_router.message(Command("register"))
 async def registration_start(message: types.Message, state: FSMContext):
     response = await check_user_status(message.from_user.id)
     if response.status_code == 200:
@@ -33,7 +39,7 @@ async def registration_start(message: types.Message, state: FSMContext):
     await message.answer("Share your contact!", reply_markup=share_contact_keyboard)
     await state.set_state(RegistrationNewClientState.user_phone_number)
 
-@user_private_router.message(RegistrationNewClientState.user_phone_number, F.contact)
+@user_private_public_router.message(RegistrationNewClientState.user_phone_number, F.contact)
 async def registration_get_user_contact(message: types.Message, state: FSMContext):
     if message.contact.user_id != message.from_user.id:
         await message.answer("Please share your own contact using the button.")
@@ -41,7 +47,6 @@ async def registration_get_user_contact(message: types.Message, state: FSMContex
     number = "+" + message.contact.phone_number.lstrip("+")
     await state.update_data(user_phone_number=number, user_id=message.contact.user_id)
     name = " ".join(filter(None, [message.contact.first_name, message.contact.last_name]))
-    name = "" #TODO: Only for  testing
     if not name:
         await message.answer("Your profile has no name. Enter please!", reply_markup=ReplyKeyboardRemove())
         await state.set_state(RegistrationNewClientState.user_name)
@@ -49,12 +54,12 @@ async def registration_get_user_contact(message: types.Message, state: FSMContex
     await state.update_data(user_name=name)
     await registration_complete(message,state)
 
-@user_private_router.message(RegistrationNewClientState.user_phone_number)
+@user_private_public_router.message(RegistrationNewClientState.user_phone_number)
 async def registration_wrong_contact(message: types.Message):
     await message.answer("Please use the button to share your contact.",
                          reply_markup=share_contact_keyboard)
 
-@user_private_router.message(RegistrationNewClientState.user_name, F.text)
+@user_private_public_router.message(RegistrationNewClientState.user_name, F.text)
 async def registration_get_custom_name(message: types.Message, state: FSMContext):
     name = message.text.strip()
     if len(name) > 100:
@@ -81,3 +86,20 @@ async def registration_complete(message: types.Message, state: FSMContext):
         await state.clear()
     else:
         await message.answer(f"Ohhhhh shiiit!((( - {response.json().get('detail')}")
+
+@user_private_protected_router.message(F.text == "Get code!")
+async def get_user_code(message: types.Message):
+    code = await get_user_loyalty_code(message.from_user.id)
+    if code is not None:
+        await message.answer(f"Your code -> {code}", reply_markup=main_keyboard)
+    else:
+        await message.answer("Something went wrong. Service unavailable!", reply_markup=main_keyboard)
+
+@user_private_protected_router.message(F.text == "My profile")
+async def get_user_profile(message: types.Message):
+    user_info = await get_user_info(message.from_user.id)
+    await message.answer(user_info, reply_markup=main_keyboard)
+
+@user_private_protected_router.message()
+async def bad_message_handler(message: types.Message):
+    await message.answer("Bad Message!", reply_markup=main_keyboard)

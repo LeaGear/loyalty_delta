@@ -23,3 +23,18 @@ async def check_user_status(user_id):
         response = await client.get(f"{BACKEND_URL}{API_REQUESTS['user_status'].format(user_id)}")
         return response
 
+async def get_user_loyalty_code(user_id):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{BACKEND_URL}{API_REQUESTS['get_user_code'].format(user_id)}")
+        if response.status_code == 200:
+            return response.json().get('data')
+        else:
+            return None
+
+async def get_user_data(user_id):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{BACKEND_URL}{API_REQUESTS['user_data'].format(user_id)}")
+        if response.status_code == 200:
+            return response.json().get('data')
+        else:
+            return None

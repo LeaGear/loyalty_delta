@@ -35,3 +35,20 @@ def client_status(client_id):
                 'status':'error',
                 'detail':'Client is not registered'
             },status=404)
+
+def get_user_code(user_id): #TODO: In future returning code instead id
+    client = Client.objects.get(telegram_id=user_id)
+    code = client.id
+    return code
+
+def get_user_data(user_id):
+    client = Client.objects.get(telegram_id=user_id)
+    user_data = {
+        'name': client.name,
+        'phone_number': client.phone_number,
+        'total_spent': client.total_spent,
+        'discount': client.discount_value,
+        'last_visit': client.last_operation_date
+    }
+    print(user_data)
+    return user_data
