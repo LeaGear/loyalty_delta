@@ -1,6 +1,11 @@
-from django.db import IntegrityError
+import secrets
+
+from django.db import IntegrityError, transaction
+from django.utils import timezone
 
 from lp_backend.models import Client, Operation, DiscountTier
+from lp_backend.constants import CODE_TTL, CODE_LENGTH
+from lp_backend.exceptions import ClientNotFound, ClientAlreadyExists, CodeGenerationFailed, RegistrationError
 
 
 def register_new_user(username, number, telegram_id):
@@ -10,31 +15,45 @@ def register_new_user(username, number, telegram_id):
             phone_number=number,
             telegram_id=telegram_id
         )
-        return True
     except IntegrityError:
-        return False
+        raise ClientAlreadyExists(telegram_id)
+    except Exception as e:
+        raise RegistrationError(telegram_id) from e
 
-def client_exists(client_id):
+def client_status(client_id):
     try:
         Client.objects.get(telegram_id=client_id)
-        return True
     except Client.DoesNotExist:
-        return False
+        raise ClientNotFound(client_id)
 
 def get_user_code(user_id):
-    try:
-        client = Client.objects.get(telegram_id=user_id)
-    except Client.DoesNotExist:
-        return None
+    now = timezone.now()
+    expires_time = now + CODE_TTL
 
-    code = client.id  # TODO: In future returning code instead id
-    return code
+    with transaction.atomic():
+        try:
+            client = Client.objects.select_for_update().get(telegram_id=user_id)
+        except Client.DoesNotExist:
+            raise ClientNotFound(user_id)
+
+        if client.actual_code and client.code_expires_at and client.code_expires_at > now:
+            return client.actual_code
+
+        for _ in range(5):
+            code = f"{secrets.randbelow(10**CODE_LENGTH):0{CODE_LENGTH}d}"
+            try:
+                with transaction.atomic():
+                    client.change_code(code, expires_time)
+                return code
+            except IntegrityError:
+                continue
+    raise CodeGenerationFailed
 
 def get_user_data(user_id):
     try:
         client = Client.objects.get(telegram_id=user_id)
     except Client.DoesNotExist:
-        return None
+        raise ClientNotFound(user_id)
     actual_discount = get_actual_discount(client.total_spent)
     user_data = {
         'name': client.name,

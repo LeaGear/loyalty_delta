@@ -16,10 +16,15 @@ class Client(models.Model):
     last_operation_date = models.DateField(null=True, blank=True, verbose_name='Last Operation Date')
     registered_at = models.DateField(auto_now_add=True, verbose_name='Registered Date')
     custom_discount = models.PositiveIntegerField(default=0, verbose_name='Custom Discount')
-
+    actual_code = models.CharField(max_length=8, unique=True, null=True, blank=True, verbose_name='Actual Code')
+    code_expires_at = models.DateTimeField(null=True, blank=True, verbose_name='Code Expire At')
     def __str__(self):
         return f"{self.name} | Total -> {self.total_spent} | Custom Discount -> {self.custom_discount}"
 
+    def change_code(self, code, time):
+        self.actual_code = code
+        self.code_expires_at = time
+        self.save()
 
 class Operation(models.Model):
     client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name='Operation for -> ')

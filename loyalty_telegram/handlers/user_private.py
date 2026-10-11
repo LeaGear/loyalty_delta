@@ -16,9 +16,8 @@ user_private_protected_router = Router()
 user_private_protected_router.message.outer_middleware(RegisteredOnlyMiddleware())
 
 class RegistrationNewClientState(StatesGroup):
-    user_phone_number = State()
+    user_contact = State()
     user_name = State()
-    user_id = State()
 
 @user_private_public_router.message(CommandStart())
 async def start_cmd(message: types.Message, state: FSMContext):
@@ -26,25 +25,28 @@ async def start_cmd(message: types.Message, state: FSMContext):
     response = await check_user_status(message.from_user.id)
     if response.status_code == 200:
         await message.answer("Main Menu", reply_markup=main_keyboard)
+    elif response.status_code == 404:
+        await message.answer(f"You are new one! Go to registration, {message.from_user.first_name}!", reply_markup=reg_keyboard)
     else:
-        await message.answer(f"Hello, {message.from_user.first_name}!", reply_markup=reg_keyboard)
+        await message.answer("Server temporally unavailable!((")
 
 @user_private_public_router.message(Command("register"))
 async def registration_start(message: types.Message, state: FSMContext):
     response = await check_user_status(message.from_user.id)
+
     if response.status_code == 200:
         await message.answer("You are registered!", reply_markup=main_keyboard)
         return
     await message.answer("Share your contact!", reply_markup=share_contact_keyboard)
-    await state.set_state(RegistrationNewClientState.user_phone_number)
+    await state.set_state(RegistrationNewClientState.user_contact)
 
-@user_private_public_router.message(RegistrationNewClientState.user_phone_number, F.contact)
+@user_private_public_router.message(RegistrationNewClientState.user_contact, F.contact)
 async def registration_get_user_contact(message: types.Message, state: FSMContext):
     if message.contact.user_id != message.from_user.id:
         await message.answer("Please share your own contact using the button.")
         return
     number = "+" + message.contact.phone_number.lstrip("+")
-    await state.update_data(user_phone_number=number, user_id=message.contact.user_id)
+    await state.update_data(user_phone_number=number, user_id=message.from_user.id)
     name = " ".join(filter(None, [message.contact.first_name, message.contact.last_name]))
     if not name:
         await message.answer("Your profile has no name. Enter please!", reply_markup=ReplyKeyboardRemove())
@@ -53,7 +55,7 @@ async def registration_get_user_contact(message: types.Message, state: FSMContex
     await state.update_data(user_name=name)
     await registration_complete(message,state)
 
-@user_private_public_router.message(RegistrationNewClientState.user_phone_number)
+@user_private_public_router.message(RegistrationNewClientState.user_contact)
 async def registration_wrong_contact(message: types.Message):
     await message.answer("Please use the button to share your contact.",
                          reply_markup=share_contact_keyboard)
