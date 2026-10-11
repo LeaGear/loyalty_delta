@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from logic.api_client import get_user_data
 
 async def get_user_info(user_id):

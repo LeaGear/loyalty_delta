@@ -18,7 +18,7 @@ class Client(models.Model):
     custom_discount = models.PositiveIntegerField(default=0, verbose_name='Custom Discount')
 
     def __str__(self):
-        return f"{self.name} spent -> {self.total_spent} | Custom Discount -> {self.custom_discount}"
+        return f"{self.name} | Total -> {self.total_spent} | Custom Discount -> {self.custom_discount}"
 
 
 class Operation(models.Model):

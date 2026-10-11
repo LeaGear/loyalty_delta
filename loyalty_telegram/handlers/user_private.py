@@ -24,7 +24,6 @@ class RegistrationNewClientState(StatesGroup):
 async def start_cmd(message: types.Message, state: FSMContext):
     await state.clear()
     response = await check_user_status(message.from_user.id)
-    print(response)
     if response.status_code == 200:
         await message.answer("Main Menu", reply_markup=main_keyboard)
     else:
@@ -76,7 +75,7 @@ async def registration_complete(message: types.Message, state: FSMContext):
         user_data.get("user_phone_number"),
         user_data.get("user_id")
     )
-    if response.status_code == 200:
+    if response.status_code == 201:
         await message.answer(
             f"Your name -> {user_data.get('user_name')}\n"
             f"Your phone number -> {user_data.get('user_phone_number')}\n"
@@ -85,7 +84,7 @@ async def registration_complete(message: types.Message, state: FSMContext):
         )
         await state.clear()
     else:
-        await message.answer(f"Ohhhhh shiiit!((( - {response.json().get('detail')}")
+        await message.answer("Registration has been aborted!", reply_markup=reg_keyboard)
 
 @user_private_protected_router.message(F.text == "Get code!")
 async def get_user_code(message: types.Message):

@@ -1,4 +1,5 @@
 import httpx
+from django.http import JsonResponse
 
 from config import BACKEND_URL, API_REQUESTS
 

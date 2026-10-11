@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.db import IntegrityError
 
 from lp_backend.models import Client, Operation, DiscountTier
 
@@ -10,30 +10,31 @@ def register_new_user(username, number, telegram_id):
             phone_number=number,
             telegram_id=telegram_id
         )
-        return JsonResponse({'status':'success', 'detail': 'Client registered'},status=200)
-    except Exception as e:
-        return JsonResponse({'status':'error', 'detail': str(e)}, status=400)
+        return True
+    except IntegrityError:
+        return False
 
-def client_status(client_id):
+def client_exists(client_id):
     try:
         Client.objects.get(telegram_id=client_id)
-        return JsonResponse({
-                'status':'success',
-                'detail':'Client is registered'
-            },status=200)
+        return True
     except Client.DoesNotExist:
-        return JsonResponse({
-                'status':'error',
-                'detail':'Client is not registered'
-            },status=404)
+        return False
 
-def get_user_code(user_id): #TODO: In future returning code instead id
-    client = Client.objects.get(telegram_id=user_id)
-    code = client.id
+def get_user_code(user_id):
+    try:
+        client = Client.objects.get(telegram_id=user_id)
+    except Client.DoesNotExist:
+        return None
+
+    code = client.id  # TODO: In future returning code instead id
     return code
 
 def get_user_data(user_id):
-    client = Client.objects.get(telegram_id=user_id)
+    try:
+        client = Client.objects.get(telegram_id=user_id)
+    except Client.DoesNotExist:
+        return None
     actual_discount = get_actual_discount(client.total_spent)
     user_data = {
         'name': client.name,
@@ -44,6 +45,7 @@ def get_user_data(user_id):
         'last_visit': client.last_operation_date
     }
     return user_data
+
 
 def get_actual_discount(total_spent):
     discount = DiscountTier.objects.filter(min_total__lte=total_spent).first()
