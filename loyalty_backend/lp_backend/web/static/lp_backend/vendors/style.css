@@ -1,0 +1,64 @@
+html, body {
+    background-color: gray;
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+/*Utilities*/
+.spacer{
+    visibility: hidden;
+}
+
+/*Head of page*/
+.page-head {
+    background-color: blue;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 10%;
+    justify-content: center;
+}
+.site-name{
+    background-color: purple;
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.site-navigation{
+    background-color: coral;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/*MAin page body */
+.page-main{
+    background-color: green;
+    display: flex;
+    flex: 1;
+    align-items: stretch;
+    padding: 2%;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.client-checker-window{
+    background-color: yellow;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+/*Basement of page */
+.page-footer {
+    background-color: red;
+    display: flex;
+    flex: 0 0 5%;
+    align-items: center;
+    justify-content: center;
+}

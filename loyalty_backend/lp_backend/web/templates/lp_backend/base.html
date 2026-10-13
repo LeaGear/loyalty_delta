@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title%}Loyalty{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'lp_backend/vendors/style.css' %}">
+</head>
+<body>
+    <header class="page-head">
+        <div class="site-name">
+            <div class="spacer">TEMP</div>
+            <div class="page-name">CHECKER</div>
+            <div class="spacer">TEMP</div>
+        </div>
+        <div class="site-navigation">
+            <div>Navigation</div>
+        </div>
+
+    </header>
+    <main class="page-main">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="page-footer">
+        Bobiki
+    </footer>
+</body>
+</html>
