@@ -20,5 +20,7 @@ def server_down(func):
             return ResponseMock(status_code=503, detail='Connection error')
         except httpx.TimeoutException:
             return ResponseMock(status_code=522, detail='Timeout Exception')
+        except httpx.HTTPError:
+            return ResponseMock(status_code=523, detail='Some HTTP error')
     return wrapper
 

@@ -6,7 +6,7 @@ load_dotenv()
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 
-SERVER_API_KEY = os.getenv("SECRET_API_KEY")
+BOT_API_KEY = os.getenv("SECRET_API_KEY")
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
