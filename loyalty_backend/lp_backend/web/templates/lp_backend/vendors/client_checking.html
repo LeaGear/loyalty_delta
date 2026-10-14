@@ -4,6 +4,35 @@
 
 {% block content %}
     <div class="client-checker-window">
-        HErRE
+        <div class="find-user-part">
+            <div class="find-user-child">
+                <label class="fuc-name-label">Name: </label>
+                <label class="fuc-label">{% if user_info %}{{user_info.name}}{% else %}User{% endif %}</label>
+            </div>
+            <div class="find-user-child">
+                <label class="fuc-label" for="field-id" >ID: </label>
+                <input class="fuc-input" id="field-id"
+                       name="id" type="text" maxlength="15" value="{{user_info.id}}">
+                <button type="button" class="copy-btn" data-target="field-id">Copy</button>
+            </div>
+            <div class="find-user-child">
+                <label class="fuc-label" for="field-code" >Code: </label>
+                <input class="fuc-input" id="field-code"
+                       name="code" type="text" maxlength="15" value="{{user_info.code}}">
+                <button type="button" class="copy-btn" data-target="field-code">Copy</button>
+            </div>
+            <div class="find-user-child">
+                <label class="fuc-label" for="field-number" >Number: </label>
+                <input class="fuc-input" id="field-number"
+                       name="number" type="text" maxlength="15" value="{{user_info.number}}">
+                <button type="button" class="copy-btn" data-target="field-number">Copy</button>
+            </div>
+            <div class="find-user-child">
+                <button class="submit-btn">SUBMIT</button>
+            </div>
+        </div>
+        <div class="user-data-part">
+            My data HERE
+        </div>
     </div>
 {% endblock %}
