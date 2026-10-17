@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="client-checker-window">
-        <div class="find-user-part">
+        <form action="{% url 'search_client' %}" method="GET" class="find-user-part">
             <div class="find-user-child">
                 <label class="fuc-name-label">Name: </label>
                 <label class="fuc-label">{% if user_info %}{{user_info.name}}{% else %}User{% endif %}</label>
@@ -12,27 +12,49 @@
             <div class="find-user-child">
                 <label class="fuc-label" for="field-id" >ID: </label>
                 <input class="fuc-input" id="field-id"
-                       name="id" type="text" maxlength="15" value="{{user_info.id}}">
+                       name="id" type="text" maxlength="10" inputmode="numeric" pattern="[0-9]*" value="{{user_info.id}}">
                 <button type="button" class="copy-btn" data-target="field-id">Copy</button>
             </div>
             <div class="find-user-child">
                 <label class="fuc-label" for="field-code" >Code: </label>
                 <input class="fuc-input" id="field-code"
-                       name="code" type="text" maxlength="15" value="{{user_info.code}}">
+                       name="code" type="text" maxlength="13" inputmode="numeric" pattern="[0-9]*" value="{{user_info.code}}">
                 <button type="button" class="copy-btn" data-target="field-code">Copy</button>
             </div>
             <div class="find-user-child">
                 <label class="fuc-label" for="field-number" >Number: </label>
                 <input class="fuc-input" id="field-number"
-                       name="number" type="text" maxlength="15" value="{{user_info.number}}">
+                       name="number" type="text" maxlength="10" inputmode="numeric" pattern="[0-9]*" value="{{user_info.phone_number}}">
                 <button type="button" class="copy-btn" data-target="field-number">Copy</button>
             </div>
             <div class="find-user-child">
-                <button class="submit-btn">SUBMIT</button>
+                <button type="submit" class="submit-btn">
+                    SUBMIT
+                </button>
             </div>
-        </div>
+        </form>
         <div class="user-data-part">
-            My data HERE
+            <div class="data-left-side">
+                <div class="total-discount">
+                    <label class="tt-dis">Total spent: {{ user_info.total_spent|default:"0" }} UAH</label>
+                    <label class="tt-dis">Current Discount: {{ user_info.discount|default:"0" }}%</label>
+                </div>
+                <div class="user-notes">
+                    <ul class="note-list">
+                        {% for note in user_info.notes %}
+                            <li class="note-record">{{note}}</li>
+                        {% endfor %}
+                        <li class="note-record">
+                            <button>
+                                add note
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="data-right-side">
+                transactions
+            </div>
         </div>
     </div>
 {% endblock %}

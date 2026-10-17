@@ -5,8 +5,17 @@ from django.utils import timezone
 
 from lp_backend.models import Client, Operation, DiscountTier
 from lp_backend.constants import CODE_TTL, CODE_LENGTH
-from lp_backend.exceptions import ClientNotFound, ClientAlreadyExists, CodeGenerationFailed, RegistrationError
+from lp_backend.exceptions import ClientNotFound, ClientAlreadyExists, CodeGenerationFailed, RegistrationError, \
+    ExpiredCode
 
+
+def code_is_actual(code_expires_at):
+    now = timezone.now()
+    expires_time = now + CODE_TTL
+    if code_expires_at and now < code_expires_at < expires_time:
+        return True
+    else:
+        return False
 
 def register_new_user(username, number, telegram_id):
     try:
@@ -35,18 +44,18 @@ def get_user_code(user_id):
             client = Client.objects.select_for_update().get(telegram_id=user_id)
         except Client.DoesNotExist:
             raise ClientNotFound(user_id)
-
-        if client.actual_code and client.code_expires_at and client.code_expires_at > now:
+        if code_is_actual(client.code_expires_at):
             return client.actual_code
+        else:
+            for _ in range(5):
+                code = f"{secrets.randbelow(10**CODE_LENGTH):0{CODE_LENGTH}d}"
+                try:
+                    with transaction.atomic():
+                        client.change_code(code, expires_time)
+                    return code
+                except IntegrityError:
+                    continue
 
-        for _ in range(5):
-            code = f"{secrets.randbelow(10**CODE_LENGTH):0{CODE_LENGTH}d}"
-            try:
-                with transaction.atomic():
-                    client.change_code(code, expires_time)
-                return code
-            except IntegrityError:
-                continue
     raise CodeGenerationFailed
 
 def get_user_data(user_id):
@@ -69,3 +78,38 @@ def get_user_data(user_id):
 def get_actual_discount(total_spent):
     discount = DiscountTier.objects.filter(min_total__lte=total_spent).first()
     return discount
+
+def get_client_data(search_data):
+    web_code = search_data.get("code").strip()
+    web_id = search_data.get("id").strip()
+    web_number = search_data.get("number").strip()
+    client = None
+
+    try:
+        client = Client.objects.get(actual_code=web_code)
+    except Client.DoesNotExist:
+        pass
+    try:
+        client = Client.objects.get(telegram_id=web_id)
+    except Client.DoesNotExist:
+        pass
+    try:
+        client = Client.objects.get(phone_number=web_number)
+    except Client.DoesNotExist:
+        pass
+
+    if not client:
+        raise ClientNotFound("All parameters - glitched")
+
+    if code_is_actual(client.code_expires_at):
+        return {
+            'name': client.name,
+            'id':client.id,
+            'code': client.actual_code,
+            'phone_number': client.phone_number,
+            'total_spent': float(client.total_spent),
+            'discount': get_actual_discount(client.total_spent).discount_percent,
+            'notes':['asdasdasd', '12124123'] #TODO: ONLY FOR TESTING
+        }
+    else:
+        raise ExpiredCode()

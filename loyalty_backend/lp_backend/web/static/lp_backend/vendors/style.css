@@ -16,11 +16,11 @@ body {
 
 /*Head of page*/
 .page-head {
-    background-color: blue;
     display: flex;
     flex-direction: column;
     flex: 0 0 10%;
     justify-content: center;
+    background-color: blue;
 }
 .site-name{
     background-color: purple;
@@ -38,22 +38,23 @@ body {
 }
 /*MAin page body */
 .page-main{
-    background-color: green;
     display: flex;
     flex: 1;
     align-items: stretch;
     padding: 2%;
     justify-content: center;
     box-sizing: border-box;
+    background-color: green;
 }
 
 .client-checker-window {
-    background-color: yellow;
     flex: 1;
     display: flex;
     gap: 20px;
     padding: 3%;
     border-radius: 20px;
+    background-color: yellow;
+
 }
 
 /*Client checker - CHILDREN*/
@@ -64,7 +65,6 @@ body {
     align-items: center;
     gap: 5px;
     flex: 0.4;
-    background-color: gray;
 }
 .user-data-part {
     display: flex;
@@ -75,9 +75,15 @@ body {
 .find-user-child {
     display: flex;
     flex: 1;
+    border-style: dotted;
+    border-width: 1px;
+    border-radius: 20px;
+    margin: 5px;
+    align-self: stretch;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 5px;
+    background-color: white;
 }
 .fuc-name-label{
     height: 30px;
@@ -102,6 +108,60 @@ body {
     width: 120px;
 }
 /*USER DATA tab - CHILDREN*/
+.data-left-side{
+    display: flex;
+    flex: 0.4;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: red;
+}
+.data-right-side{
+    display: flex;
+    flex: 0.6;
+    align-items: center;
+    justify-content: center;
+    background-color: blue;
+}
+/* LEFT  side*/
+.total-discount{
+    display: flex;
+    flex: 0.3;
+    flex-direction: column;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+    background-color: green;
+}
+.user-notes{
+    display: flex;
+    flex: 0.7;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+}
+.tt-dis{
+    font-size:30px;
+}
+.note-list{
+    flex: 1;
+    align-self: stretch;
+    padding: 10px;
+    margin: 5px;
+    scroll-behavior: smooth;
+    border-radius: 20px;
+    list-style: None;
+    overflow-y: auto;
+    background-color: violet;
+}
+.note-record{
+    margin-bottom: 8px;
+    border-bottom: 1px dashed #4ade80;
+    padding-bottom: 8px;
+
+}
+/* RIGHT  side */
+
 
 /*Basement of page */
 .page-footer {
@@ -110,4 +170,8 @@ body {
     flex: 0 0 5%;
     align-items: center;
     justify-content: center;
+}
+.footer-data{
+    flex: 1;
+    background-color: white;
 }

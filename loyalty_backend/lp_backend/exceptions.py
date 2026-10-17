@@ -14,3 +14,6 @@ class CodeGenerationFailed(ServiceError):
 
 class RegistrationError(ServiceError):
     pass
+
+class ExpiredCode(ServiceError):
+    pass

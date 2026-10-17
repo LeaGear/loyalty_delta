@@ -45,7 +45,7 @@ async def registration_get_user_contact(message: types.Message, state: FSMContex
     if message.contact.user_id != message.from_user.id:
         await message.answer("Please share your own contact using the button.")
         return
-    number = "+" + message.contact.phone_number.lstrip("+")
+    number = message.contact.phone_number.lstrip("+")
     await state.update_data(user_phone_number=number, user_id=message.from_user.id)
     name = " ".join(filter(None, [message.contact.first_name, message.contact.last_name]))
     if not name:
