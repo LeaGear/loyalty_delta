@@ -2,8 +2,9 @@ import secrets
 
 from django.db import IntegrityError, transaction
 from django.utils import timezone
+from psycopg import Transaction
 
-from lp_backend.models import Client, Operation, DiscountTier, ClientNote
+from lp_backend.models import Client, Operation, DiscountTier, ClientNote, OperationType
 from lp_backend.constants import CODE_TTL, CODE_LENGTH
 from lp_backend.exceptions import ClientNotFound, ClientAlreadyExists, CodeGenerationFailed, RegistrationError, \
     ExpiredCode
@@ -16,7 +17,8 @@ def user_data_dict_builder(client):
         'phone_number': client.phone_number,
         'total_spent': float(client.total_spent),
         'discount': get_actual_discount(client.total_spent, client.custom_discount),
-        'notes': get_all_user_notes(client)
+        'transactions': get_all_client_transactions(client),
+        'notes': get_all_client_notes(client)
     }
     return result
 
@@ -147,11 +149,44 @@ def add_new_note(note_data):
     )
     return user_data_dict_builder(client)
 
-def get_all_user_notes(client):
+def add_new_transaction(note_data):
+    if not note_data.get("transaction-amount").strip():
+        return None
+    client_id = int(note_data.get("client_id").strip())
+    transaction_amount = float(note_data.get("transaction-amount").strip())
+    transaction_type = note_data.get("trans-type").strip()
+
+
+    client = get_client_by_parameters(client_id=client_id)
+
+    if transaction_type == "purchase":
+        Operation.objects.create(
+            client=client,
+            operation_type=OperationType.PURCHASE,
+            amount=transaction_amount,
+        )
+    else:
+        Operation.objects.create(
+            client=client,
+            operation_type=OperationType.REFUND,
+            amount=transaction_amount,
+        )
+
+    return user_data_dict_builder(client)
+
+def get_all_client_notes(client):
     result = []
     notes = ClientNote.objects.filter(client=client)
-    print(notes)
     for note in notes:
         temp = f"[{note.created_at.strftime('%d-%m-%Y %H:%M')}] {note.text}"
         result.append(temp)
+    return result
+
+def get_all_client_transactions(client):
+    result = []
+    transactions = Operation.objects.filter(client=client)
+    for trans in transactions:
+        temp = f"[{trans.operation_date.strftime('%d-%m-%Y %H:%M')}] [{trans.operation_type}] <------> {trans.amount}"
+        result.append(temp)
+
     return result

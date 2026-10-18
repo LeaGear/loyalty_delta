@@ -45,8 +45,8 @@
                             <li class="note-record">{{note}}</li>
                         {% endfor %}
                         <li class="note-record">
-
-                            <form id="note-form" action="{% url 'add_note' %}" method="GET">
+                            <form id="note-form" action="{% url 'add_note' %}" method="POST">
+                                {% csrf_token %}
                                 {% if user_info.id %}
                                 <input type="hidden" name="client_id" value="{{ user_info.id }}">
                                 {% endif %}
@@ -55,13 +55,33 @@
                                 add note
                                 </button>
                             </form>
-
                         </li>
                     </ul>
                 </div>
             </div>
             <div class="data-right-side">
-                transactions
+                <ul class="note-list">
+                {% for transaction in user_info.transactions %}
+                    <li class="note-record">{{transaction}}</li>
+                    {% endfor %}
+                    <li class="note-record">
+                        <form id="transaction-form" action="{% url 'add_transaction' %}" method="POST">
+                            {% csrf_token %}
+                            {% if user_info.id %}
+                            <input type="hidden" name="client_id" value="{{ user_info.id }}">
+                            {% endif %}
+                            <input class="note-input" id="field-transaction" name="transaction-amount" type="text"
+                                   maxlength="13" inputmode="numeric" pattern="[0-9]*">
+                            <select class="trans-type-select" name="trans-type">
+                                <option value="purchase">PURCHASE</option>
+                                <option value="refund">REFUND</option>
+                            </select>
+                            <button class="add-trans-btn" type="submit">
+                            add trans
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

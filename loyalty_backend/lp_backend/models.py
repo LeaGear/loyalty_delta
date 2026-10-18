@@ -30,7 +30,7 @@ class Operation(models.Model):
     client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name='Operation for -> ')
     operation_type = models.CharField(max_length=20, choices=OperationType.choices, default=OperationType.PURCHASE, verbose_name='Operation Type')
     amount = models.DecimalField(default=0, max_digits=7, decimal_places=2, verbose_name='Operation Amount')
-    operation_date = models.DateField(auto_now_add=True, verbose_name='Operation Date')
+    operation_date = models.DateTimeField(auto_now_add=True, verbose_name='Operation Date')
 
     def __str__(self):
         return f"{self.client} -> {self.operation_type} -> {self.amount} -> {self.operation_date}"
