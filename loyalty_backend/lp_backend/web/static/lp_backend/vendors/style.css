@@ -1,7 +1,7 @@
 html, body {
     background-color: gray;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
     margin: 0;
     padding: 0;
 }
@@ -40,6 +40,7 @@ body {
 .page-main{
     display: flex;
     flex: 1;
+    min-height: 0;
     align-items: stretch;
     padding: 2%;
     justify-content: center;
@@ -50,6 +51,7 @@ body {
 .client-checker-window {
     flex: 1;
     display: flex;
+    min-height: 0;
     gap: 20px;
     padding: 3%;
     border-radius: 20px;
@@ -69,6 +71,7 @@ body {
 .user-data-part {
     display: flex;
     flex: 1;
+    min-height: 0;
     background-color: orange;
 }
 /*FIND USER tab - CHILDREN*/
@@ -111,6 +114,7 @@ body {
 .data-left-side{
     display: flex;
     flex: 0.4;
+    min-height: 0;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -135,7 +139,8 @@ body {
 }
 .user-notes{
     display: flex;
-    flex: 0.7;
+    flex: 1;
+    min-height: 0;
     align-self: stretch;
     align-items: center;
     justify-content: center;
@@ -145,6 +150,7 @@ body {
 }
 .note-list{
     flex: 1;
+    min-height: 0;
     align-self: stretch;
     padding: 10px;
     margin: 5px;

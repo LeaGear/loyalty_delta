@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="client-checker-window">
-        <form action="{% url 'search_client' %}" method="GET" class="find-user-part">
+        <form id="user-params-form" action="{% url 'search_client' %}" method="GET" class="find-user-part">
             <div class="find-user-child">
                 <label class="fuc-name-label">Name: </label>
                 <label class="fuc-label">{% if user_info %}{{user_info.name}}{% else %}User{% endif %}</label>
@@ -12,7 +12,7 @@
             <div class="find-user-child">
                 <label class="fuc-label" for="field-id" >ID: </label>
                 <input class="fuc-input" id="field-id"
-                       name="id" type="text" maxlength="10" inputmode="numeric" pattern="[0-9]*" value="{{user_info.id}}">
+                       name="id" type="text" maxlength="13" inputmode="numeric" pattern="[0-9]*" value="{{user_info.id}}">
                 <button type="button" class="copy-btn" data-target="field-id">Copy</button>
             </div>
             <div class="find-user-child">
@@ -24,7 +24,7 @@
             <div class="find-user-child">
                 <label class="fuc-label" for="field-number" >Number: </label>
                 <input class="fuc-input" id="field-number"
-                       name="number" type="text" maxlength="10" inputmode="numeric" pattern="[0-9]*" value="{{user_info.phone_number}}">
+                       name="number" type="text" maxlength="13" inputmode="numeric" pattern="[0-9]*" value="{{user_info.phone_number}}">
                 <button type="button" class="copy-btn" data-target="field-number">Copy</button>
             </div>
             <div class="find-user-child">
@@ -45,9 +45,17 @@
                             <li class="note-record">{{note}}</li>
                         {% endfor %}
                         <li class="note-record">
-                            <button>
+
+                            <form id="note-form" action="{% url 'add_note' %}" method="GET">
+                                {% if user_info.id %}
+                                <input type="hidden" name="client_id" value="{{ user_info.id }}">
+                                {% endif %}
+                                <input class="note-input" id="field-note" name="new-note" type="text">
+                                <button class="add-note-btn" type="submit">
                                 add note
-                            </button>
+                                </button>
+                            </form>
+
                         </li>
                     </ul>
                 </div>

@@ -45,3 +45,11 @@ class DiscountTier(models.Model):
 
     def __str__(self):
         return f"{self.name} | Spent -> {self.min_total} | Discount -> {self.discount_percent}%"
+
+class ClientNote(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Client Name')
+    text = models.TextField(verbose_name='Client Text Note')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Client Creation Date')
+
+    def __str__(self):
+        return f"{self.client.name} -> {self.text}"
