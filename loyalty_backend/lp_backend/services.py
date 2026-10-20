@@ -149,6 +149,13 @@ def add_new_note(note_data):
     )
     return user_data_dict_builder(client)
 
+def delete_note(note_data):
+    client_id = int(note_data.get("client_id").strip())
+    note_id = int(note_data.get("note_id").strip())
+    ClientNote.objects.filter(id=note_id).delete()
+    client = get_client_by_parameters(client_id=client_id)
+    return user_data_dict_builder(client)
+
 def add_new_transaction(note_data):
     if not note_data.get("transaction-amount").strip():
         return None
@@ -178,7 +185,10 @@ def get_all_client_notes(client):
     result = []
     notes = ClientNote.objects.filter(client=client)
     for note in notes:
-        temp = f"[{note.created_at.strftime('%d-%m-%Y %H:%M')}] {note.text}"
+        temp = {
+            'id': note.id,
+            'text' : f"[{note.created_at.strftime('%d-%m-%Y %H:%M')}] {note.text}"
+        }
         result.append(temp)
     return result
 

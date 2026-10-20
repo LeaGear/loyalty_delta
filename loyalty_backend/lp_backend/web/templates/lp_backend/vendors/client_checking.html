@@ -42,7 +42,15 @@
                 <div class="user-notes">
                     <ul class="note-list">
                         {% for note in user_info.notes %}
-                            <li class="note-record">{{note}}</li>
+                        <li class="note-record">
+                            <form id="note-del" action="{% url 'del_note' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="client_id" value="{{ user_info.id }}">
+                                <input type="hidden" name="note_id" value="{{ note.id }}">
+                                <button class="delete_note" type="submit">x</button>
+                                {{ note.text }}
+                            </form>
+                        </li>
                         {% endfor %}
                         <li class="note-record">
                             <form id="note-form" action="{% url 'add_note' %}" method="POST">

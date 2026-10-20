@@ -2,7 +2,7 @@
 from django.views.decorators.http import require_GET, require_POST
 from django.shortcuts import render
 
-from lp_backend.services import get_client_data, add_new_note, add_new_transaction
+from lp_backend.services import get_client_data, add_new_note, delete_note, add_new_transaction
 
 # TODO: TEST
 USER_INFO_TEST = {
@@ -39,6 +39,13 @@ def add_note_view(request):
     new_note_data = request.POST.dict()
     print(new_note_data)
     user_data = add_new_note(new_note_data)
+    return render(request, 'lp_backend/vendors/client_checking.html', {'user_info': user_data})
+
+@require_POST
+def del_note_view(request):
+    note_data = request.POST.dict()
+    print(note_data)
+    user_data = delete_note(note_data)
     return render(request, 'lp_backend/vendors/client_checking.html', {'user_info': user_data})
 
 @require_POST
