@@ -4,81 +4,42 @@
 
 {% block content %}
     <div class="client-checker-window">
-        <form id="user-params-form" action="{% url 'search_client' %}" method="GET" class="find-user-part">
-            <div class="find-user-child">
-                <label class="fuc-name-label">Name: </label>
-                <label class="fuc-label">{% if user_info %}{{user_info.name}}{% else %}User{% endif %}</label>
+        <div class="user-info-part">
+            <div class="find-user-data">
+                <label class="user-data-label">Name: {% if user_info %}{{user_info.name}}{% else %}User{% endif %}</label>
+                <label class="user-data-label">ID: {% if user_info %}{{user_info.id}}{% else %}None{% endif %}</label>
+                <label class="user-data-label">Code: {% if user_info %}{{user_info.code}}{% else %}None{% endif %}</label>
+                <label class="user-data-label">Number: {% if user_info %}{{user_info.phone_number}}{% else %}None{% endif %}</label>
+                <label class="user-data-label"><strong>Total spent:</strong> {{ user_info.total_spent|default:"0" }} UAH</label>
+                <label class="user-data-label"><strong>Current Discount:</strong> {{ user_info.discount|default:"0" }}%</label>
             </div>
-            <div class="find-user-child">
-                <label class="fuc-label" for="field-id" >ID: </label>
-                <input class="fuc-input" id="field-id"
-                       name="id" type="text" maxlength="13" inputmode="numeric" pattern="[0-9]*" value="{{user_info.id}}">
-                <button type="button" class="copy-btn" data-target="field-id">Copy</button>
+            <div class="find-user-search">
+                <form id="user-params-form" action="{% url 'search_client' %}" method="GET" class="find-user-part">
+                    <label class="fuc-label" for="field-client-param" >Search client: </label>
+                    <input class="fuc-input" id="field-client-param"
+                           name="client-param" type="text" maxlength="13" inputmode="numeric" pattern="[0-9]*">
+                    <button type="submit" class="submit-btn">
+                        SUBMIT
+                    </button>
+                </form>
             </div>
-            <div class="find-user-child">
-                <label class="fuc-label" for="field-code" >Code: </label>
-                <input class="fuc-input" id="field-code"
-                       name="code" type="text" maxlength="13" inputmode="numeric" pattern="[0-9]*" value="{{user_info.code}}">
-                <button type="button" class="copy-btn" data-target="field-code">Copy</button>
-            </div>
-            <div class="find-user-child">
-                <label class="fuc-label" for="field-number" >Number: </label>
-                <input class="fuc-input" id="field-number"
-                       name="number" type="text" maxlength="13" inputmode="numeric" pattern="[0-9]*" value="{{user_info.phone_number}}">
-                <button type="button" class="copy-btn" data-target="field-number">Copy</button>
-            </div>
-            <div class="find-user-child">
-                <button type="submit" class="submit-btn">
-                    SUBMIT
-                </button>
-            </div>
-        </form>
-        <div class="user-data-part">
-            <div class="data-left-side">
-                <div class="total-discount">
-                    <label class="tt-dis">Total spent: {{ user_info.total_spent|default:"0" }} UAH</label>
-                    <label class="tt-dis">Current Discount: {{ user_info.discount|default:"0" }}%</label>
-                </div>
-                <div class="user-notes">
-                    <ul class="note-list">
-                        {% for note in user_info.notes %}
-                        <li class="note-record">
-                            <form id="note-del" action="{% url 'del_note' %}" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="client_id" value="{{ user_info.id }}">
-                                <input type="hidden" name="note_id" value="{{ note.id }}">
-                                <button class="delete_note" type="submit">x</button>
-                                {{ note.text }}
-                            </form>
-                        </li>
-                        {% endfor %}
-                        <li class="note-record">
-                            <form id="note-form" action="{% url 'add_note' %}" method="POST">
-                                {% csrf_token %}
-                                {% if user_info.id %}
-                                <input type="hidden" name="client_id" value="{{ user_info.id }}">
-                                {% endif %}
-                                <input class="note-input" id="field-note" name="new-note" type="text">
-                                <button class="add-note-btn" type="submit">
-                                add note
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="data-right-side">
+        </div>
+        <div class="note-trans-part">
+            <div class="transactions-part">
                 <ul class="note-list">
                 {% for transaction in user_info.transactions %}
-                    <li class="note-record">{{transaction}}</li>
+                    <li class="note-record">
+                        <form id="trans-del" action="{% url 'del_transaction' client_id=user_info.id transaction_id=transaction.id %}" method="POST">
+                            {% csrf_token %}
+                            <button class="delete-trans-btn" type="submit">x</button>
+                            {{ transaction.text }}
+                        </form>
+                    </li>
                     {% endfor %}
                     <li class="note-record">
-                        <form id="transaction-form" action="{% url 'add_transaction' %}" method="POST">
+                        <form id="transaction-form" action="{% url 'add_transaction' client_id=user_info.id %}" method="POST">
                             {% csrf_token %}
-                            {% if user_info.id %}
-                            <input type="hidden" name="client_id" value="{{ user_info.id }}">
-                            {% endif %}
-                            <input class="note-input" id="field-transaction" name="transaction-amount" type="text"
+                            <input class="note-input" id="field-transaction" name="trans-amount" type="text"
                                    maxlength="13" inputmode="numeric" pattern="[0-9]*">
                             <select class="trans-type-select" name="trans-type">
                                 <option value="purchase">PURCHASE</option>
@@ -86,6 +47,28 @@
                             </select>
                             <button class="add-trans-btn" type="submit">
                             add trans
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            <div class="notes-part">
+                <ul class="note-list">
+                    {% for note in user_info.notes %}
+                    <li class="note-record">
+                        <form id="note-del" action="{% url 'del_note' client_id=user_info.id note_id=note.id%}" method="POST">
+                            {% csrf_token %}
+                            <button class="delete-note-btn" type="submit">x</button>
+                            {{ note.text }}
+                        </form>
+                    </li>
+                    {% endfor %}
+                    <li class="note-record">
+                        <form id="note-form" action="{% url 'add_note' client_id=user_info.id %}" method="POST">
+                            {% csrf_token %}
+                            <input class="note-input" id="field-note" name="note-text" type="text">
+                            <button class="add-note-btn" type="submit">
+                            add note
                             </button>
                         </form>
                     </li>

@@ -17,3 +17,13 @@ class RegistrationError(ServiceError):
 
 class ExpiredCode(ServiceError):
     pass
+
+class IncorrectNumber(ServiceError):
+    pass
+
+class InvalidSearchInput(ServiceError):
+    pass
+
+class TransactionAmountOverLimit(ServiceError):
+    pass
+

@@ -56,26 +56,39 @@ body {
     padding: 3%;
     border-radius: 20px;
     background-color: yellow;
-
 }
 
 /*Client checker - CHILDREN*/
 
-.find-user-part {
+.user-info-part {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px;
     flex: 0.4;
 }
-.user-data-part {
+.note-trans-part {
     display: flex;
     flex: 1;
     min-height: 0;
     background-color: orange;
 }
 /*FIND USER tab - CHILDREN*/
-.find-user-child {
+.find-user-data {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    border-style: dotted;
+    border-width: 1px;
+    border-radius: 20px;
+    margin: 5px;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background-color: white;
+}
+.find-user-search {
     display: flex;
     flex: 1;
     border-style: dotted;
@@ -88,16 +101,13 @@ body {
     gap: 5px;
     background-color: white;
 }
-.fuc-name-label{
-    height: 30px;
+.user-data-label{
+    display: flex;
+    flex: 1;
     font-size: 24px;
+    align-items: center;
+    justify-content: center;
 }
-.fuc-label{
-    width: 100px;
-    height: 30px;
-    font-size: 24px;
-}
-
 .fuc-input{
     height: 24px;
     font-size: 20px;
@@ -111,7 +121,7 @@ body {
     width: 120px;
 }
 /*USER DATA tab - CHILDREN*/
-.data-left-side{
+.notes-part{
     display: flex;
     flex: 0.4;
     min-height: 0;
@@ -120,14 +130,16 @@ body {
     justify-content: center;
     background-color: red;
 }
-.data-right-side{
+.transactions-part{
     display: flex;
-    flex: 0.6;
+    flex: 0.6;]
+    min-height: 0;
     align-items: center;
     justify-content: center;
     background-color: blue;
 }
-/* LEFT  side*/
+/* LEFT USER DATA  side*/
+
 .total-discount{
     display: flex;
     flex: 0.3;
