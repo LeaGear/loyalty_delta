@@ -1,59 +1,80 @@
-
+from django.contrib import messages
 from django.views.decorators.http import require_GET, require_POST
 from django.shortcuts import render, redirect
 
-from lp_backend.services import get_client_id_by_param, get_client_data, add_new_note, delete_note, add_new_transaction, delete_transaction, get_all_client_notes, get_all_client_transactions
-
-'''{
-    'name': client.name,
-    'id':client.id, 
-    'code': client.actual_code,
-    'phone_number': client.phone_number,
-    'total_spent': client.total_spent,
-    'discount': get_actual_discount(client.total_spent).discount_percent
-}'''
+from lp_backend.exceptions import ServiceError
+from lp_backend.services import get_client_id_by_param, get_client_data, add_new_note, delete_note, add_new_operation, delete_operation, get_all_client_notes, get_all_client_operations
+from lp_backend.web.messages import error_text
 
 @require_GET
-def base_view(request):
+def client_loyalty_view(request):
     return render(request, 'lp_backend/vendors/client_checking.html')
 
 @require_GET
 def client_page_view(request, client_id):
-    client_info = get_client_data(client_id)
-    client_info['notes'] = get_all_client_notes(client_id)
-    client_info['transactions'] = get_all_client_transactions(client_id)
-    print(client_info)
+    try:
+        client_info = get_client_data(client_id)
+        client_info['notes'] = get_all_client_notes(client_id)
+        client_info['operations'] = get_all_client_operations(client_id)
+    except ServiceError as e:
+        messages.error(request, error_text(e))
+        return redirect('client_loyalty_page')
+
     return render(request, 'lp_backend/vendors/client_checking.html', {'user_info': client_info})
+
 
 @require_GET
 def search_client_view(request):
     search_data = request.GET.dict()
-    print(search_data)
-    client_param = search_data.get('client-param').strip()
-    client_inner_id = get_client_id_by_param(client_param)
-    return redirect('client_page', client_inner_id)
+    client_param = search_data.get('client-param', '').strip()
+    if not client_param:
+        return redirect('client_loyalty_page')
+    try:
+        client_inner_id = get_client_id_by_param(client_param)
+        messages.success(request, 'Client found successfully!')
+        return redirect('client_page', client_inner_id)
+    except ServiceError as e:
+        messages.error(request, error_text(e))
+        return redirect('client_loyalty_page')
 
 @require_POST
 def add_note_view(request, client_id):
-    new_note_data = request.POST.dict()
-    note_text = new_note_data.get('note-text').strip()
-    add_new_note(client_id, note_text)
+    try:
+        new_note_data = request.POST.dict()
+        note_text = new_note_data.get('note-text', '').strip()
+        add_new_note(client_id, note_text)
+        messages.success(request, 'Note added successfully!')
+    except ServiceError as e:
+        messages.error(request, error_text(e))
+
     return redirect('client_page', client_id)
 
 @require_POST
 def del_note_view(request, client_id, note_id):
-    delete_note(note_id, client_id)
+    try:
+        delete_note(note_id, client_id)
+        messages.success(request, 'Note deleted successfully!')
+    except ServiceError as e:
+        messages.error(request, error_text(e))
     return redirect('client_page', client_id)
-
 
 @require_POST
-def add_transaction_view(request, client_id):
-    new_transaction_data = request.POST.dict()
-    transaction_amount = new_transaction_data.get('trans-amount').strip()
-    transaction_type = new_transaction_data.get('trans-type').strip()
-    add_new_transaction(transaction_amount, transaction_type, client_id)
+def add_operation_view(request, client_id):
+    try:
+        new_operation_data = request.POST.dict()
+        operation_amount = new_operation_data.get('oper-amount', '').strip()
+        operation_type = new_operation_data.get('oper-type', '').strip()
+        add_new_operation(operation_amount, operation_type, client_id)
+        messages.success(request, 'Operation added successfully!')
+    except ServiceError as e:
+        messages.error(request, error_text(e))
     return redirect('client_page', client_id)
 
-def del_transaction_view(request, client_id, transaction_id):
-    delete_transaction(transaction_id, client_id)
+@require_POST
+def del_operation_view(request, client_id, operation_id):
+    try:
+        delete_operation(operation_id, client_id)
+        messages.success(request, 'operation deleted successfully!')
+    except ServiceError as e:
+        messages.error(request, error_text(e))
     return redirect('client_page', client_id)

@@ -24,5 +24,16 @@
     <footer class="page-footer">
         Bobiki
     </footer>
+    {% if messages %}
+        <input type="checkbox" id="toast-dismiss" class="toast-toggle-checkbox">
+        <div class="toast-popup">
+            {% for m in messages %}
+                <div class="message {{ m.tags }}">{{ m }}</div>
+            {% endfor %}
+                <div class="to-ok-btn-div">
+                    <label for="toast-dismiss" class="toast-ok-btn">OK</label>
+                </div>
+        </div>
+    {% endif %}
 </body>
 </html>

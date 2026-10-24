@@ -5,7 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
 from lp_backend.api.decorators import api_key_required
-from lp_backend.services import register_new_user, client_status, generate_user_code, get_client_data
+from lp_backend.services import register_new_user, client_status, generate_user_code, get_client_data, \
+    get_client_by_tg_id
 from lp_backend.api.responses import ok, fail
 from lp_backend.exceptions import ClientNotFound, CodeGenerationFailed, RegistrationError, ClientAlreadyExists
 
@@ -66,7 +67,8 @@ def get_user_loyalty_code_view(request, user_id):
 @api_key_required
 def get_user_data_view(request, user_id):
     try:
-        data = get_client_data(user_id)
+        inner_id = get_client_by_tg_id(user_id)
+        data = get_client_data(inner_id.id)
         return ok(detail='User data received: type -> dict', data=data, status_code=200)
     except ClientNotFound:
         return fail(detail='User not found in DB', status_code=404)

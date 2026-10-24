@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.timezone import now
+
 
 # Create your models here.
 
@@ -13,7 +15,7 @@ class Client(models.Model):
     phone_number = models.CharField(unique=True, max_length=20, verbose_name='Client Phone Number')
     telegram_id = models.BigIntegerField(unique=True, verbose_name='Client Telegram ID')
     total_spent = models.DecimalField(default=0, max_digits=8, decimal_places=2, verbose_name='Total Spent')
-    last_operation_date = models.DateField(null=True, blank=True, verbose_name='Last Operation Date')
+    last_operation_date = models.DateTimeField(null=True, blank=True, verbose_name='Last Operation Date')
     registered_at = models.DateField(auto_now_add=True, verbose_name='Registered Date')
     custom_discount = models.PositiveIntegerField(default=0, verbose_name='Custom Discount')
     actual_code = models.CharField(max_length=8, unique=True, null=True, blank=True, verbose_name='Actual Code')
@@ -24,6 +26,14 @@ class Client(models.Model):
     def change_code(self, code, time):
         self.actual_code = code
         self.code_expires_at = time
+        self.save()
+
+    def set_last_operation_date(self):
+        self.last_operation_date = now()
+        self.save()
+
+    def set_total_spent(self, value):
+        self.total_spent = value
         self.save()
 
 class Operation(models.Model):

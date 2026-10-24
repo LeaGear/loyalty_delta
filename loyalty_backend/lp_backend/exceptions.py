@@ -24,6 +24,6 @@ class IncorrectNumber(ServiceError):
 class InvalidSearchInput(ServiceError):
     pass
 
-class TransactionAmountOverLimit(ServiceError):
+class OperationAmountOverLimit(ServiceError):
     pass
 
