@@ -37,7 +37,13 @@
                             <li class="note-record">
                                 <form class="oper-del" action="{% url 'del_operation' client_id=user_info.id operation_id=oper.id %}" method="POST">
                                     {% csrf_token %}
-                                    <span>{{ oper.text }}</span>
+                                    <div class="oper-content">
+                                        <span class="oper-badge {% if oper.type == 'PURCHASE' %}purchase{% else %}refund{% endif %}">
+                                            {{ oper.type }}
+                                        </span>
+                                        <span class="oper-amount">{{ oper.amount }} UAH</span>
+                                        <span class="oper-date">{{ oper.date }}</span>
+                                    </div>
                                     <button class="delete-oper-btn" type="submit" title="Delete operation">×</button>
                                 </form>
                             </li>
@@ -54,7 +60,7 @@
                             </form>
                         </li>
                     {% else %}
-                        <li class="empty-state">First search user</li>
+                        <li class="empty-state">First search client</li>
                     {% endif %}
                 </ul>
             </div>
@@ -68,7 +74,7 @@
                             <li class="note-record">
                                 <form class="note-del" action="{% url 'del_note' client_id=user_info.id note_id=note.id %}" method="POST">
                                     {% csrf_token %}
-                                    <span>{{ note.text }}</span>
+                                    <span>[{{ note.date }}] {{ note.text }}</span>
                                     <button class="delete-note-btn" type="submit" title="Delete note">×</button>
                                 </form>
                             </li>
@@ -81,7 +87,7 @@
                             </form>
                         </li>
                     {% else %}
-                        <li class="empty-state">Firstly search client</li>
+                        <li class="empty-state">First search client</li>
                     {% endif %}
                 </ul>
             </div>

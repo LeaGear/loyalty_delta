@@ -166,7 +166,8 @@ def get_all_client_notes(client_id) -> list:
         actual_time = _change_time_to_actual_tz(note.created_at)
         temp = {
             'id': note.id,
-            'text' : f"[{actual_time}] {note.text}"
+            'date': actual_time,
+            'text' : note.text
         }
         result.append(temp)
     return result
@@ -178,7 +179,9 @@ def get_all_client_operations(client_id) -> list:
         actual_time = _change_time_to_actual_tz(oper.operation_date)
         temp = {
             'id' : oper.id,
-            'text': f"[{actual_time}] [{oper.operation_type}] <------> {oper.amount}"
+            'amount' : oper.amount,
+            'type' : oper.operation_type,
+            'date' : actual_time
         }
         result.append(temp)
     return result

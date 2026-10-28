@@ -137,6 +137,47 @@ body {
     align-items: center;
 }
 
+/* Контейнер навигации в шапке */
+.site-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px; /* Расстояние между кнопками навигации */
+    height: 45px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* Стиль для каждой отдельной кнопки-ссылки навигации */
+.nav-link {
+    background-color: #141418;
+    color: #b0b0b8;
+    border: 1px solid #2d2d35;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Эффект при наведении мыши */
+.nav-link:hover {
+    background-color: #1e1e24;
+    color: #ffffff;
+    border-color: #4f46e5;
+}
+
+/* Активная или выбранная страница (можно вешать класс .active при необходимости) */
+.nav-link.active {
+    background-color: #4f46e5;
+    color: #ffffff;
+    border-color: #4f46e5;
+}
+
 /* Подвал страницы */
 .page-footer {
     background-color: #16161a;
@@ -482,4 +523,45 @@ body {
     border: 1px solid #7f1d1d;
     color: #fca5a5;
     text-align: center;
+}
+
+.oper-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+/* Бейдж типа операции */
+.oper-badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.oper-badge.purchase {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.oper-badge.refund {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Сумма */
+.oper-amount {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* Дата */
+.oper-date {
+    color: #8a8a93;
+    font-size: 0.85rem;
 }
