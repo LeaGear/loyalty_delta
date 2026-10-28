@@ -1,30 +1,54 @@
 import secrets
 
+from aiogram.utils.formatting import DateTime
 from django.db import IntegrityError, transaction
 from django.db.models import Sum, Q
 from django.utils import timezone
+from zoneinfo import ZoneInfo
 
 from lp_backend.models import Client, Operation, DiscountTier, ClientNote, OperationType
-from lp_backend.constants import CODE_TTL, CODE_LENGTH
+from lp_backend.constants import CODE_TTL, CODE_LENGTH, MAXIMUM_DISCOUNT_VALUE
 from lp_backend.exceptions import ClientNotFound, ClientAlreadyExists, CodeGenerationFailed, RegistrationError, \
-    ExpiredCode, IncorrectNumber, InvalidSearchInput, OperationAmountOverLimit
+    ExpiredCode, IncorrectNumber, InvalidSearchInput, OperationAmountOverLimit, WrongOperationValue, NotExistForDeleting
 
 
 def _code_is_actual(code_expires_at) -> bool:
     now = timezone.now()
-    expires_time = now + CODE_TTL
-    if code_expires_at and now < code_expires_at < expires_time:
+    if code_expires_at and now < code_expires_at:
         return True
     else:
         return False
 
 def _get_client_by_inner_id(inner_id) -> Client:
-    client = Client.objects.get(id=inner_id)
-    return client
+    try:
+        client = Client.objects.get(id=inner_id)
+        return client
+    except Client.DoesNotExist:
+        raise ClientNotFound(inner_id)
 
 def _get_actual_discount(total_spent) -> DiscountTier:
     discount = DiscountTier.objects.filter(min_total__lte=total_spent).first()
     return discount
+
+def _get_last_actual_operation_date(client_id) -> DateTime | None:
+    last_operation = Operation.objects.filter(client_id=client_id).order_by('-operation_date').first()
+    if not last_operation:
+        return None
+    return last_operation.operation_date
+
+def _get_overall_discount(db_percent, custom_bonus) -> int:
+    summary = db_percent + custom_bonus
+    overall = min(MAXIMUM_DISCOUNT_VALUE, summary)
+    return overall
+
+def _change_time_to_actual_tz(date: DateTime) -> str | None:
+    if not date:
+        return None
+
+    kyiv_tz = ZoneInfo("Europe/Kyiv")
+    pd_kyiv = date.astimezone(kyiv_tz)
+    actual = pd_kyiv.strftime('%d-%m-%Y %H:%M')
+    return actual
 
 def _calculate_client_total_spent(client) -> None:
     result = Operation.objects.filter(client=client).aggregate(
@@ -48,7 +72,7 @@ def register_new_user(username, number, telegram_id) -> None:
     except Exception as e:
         raise RegistrationError(telegram_id) from e
 
-def client_status(client_id):
+def client_status(client_id) -> None:
     try:
         Client.objects.get(telegram_id=client_id)
     except Client.DoesNotExist:
@@ -85,7 +109,7 @@ def get_client_by_tg_id(telegram_id) -> Client:
     except Client.DoesNotExist:
         raise ClientNotFound(telegram_id)
 
-def get_client_id_by_param(client_param) -> Client:
+def get_client_id_by_param(client_param) -> int:
     digits = "".join(ch for ch in client_param if ch.isdigit())
     if not digits:
         raise InvalidSearchInput(client_param)
@@ -108,7 +132,7 @@ def get_client_id_by_param(client_param) -> Client:
             return client.id
 
         elif len(digits) < CODE_LENGTH:
-            client = Client.objects.get(id=int(digits))
+            client = _get_client_by_inner_id(int(digits))
             return client.id
 
     except Client.DoesNotExist:
@@ -117,46 +141,46 @@ def get_client_id_by_param(client_param) -> Client:
     raise InvalidSearchInput(client_param)
 
 
-def get_client_data(inner_id) -> dict:
+def get_client_data(db_inner_id) -> dict:
     try:
-        client = Client.objects.get(id=inner_id)
+        client = _get_client_by_inner_id(db_inner_id)
     except Client.DoesNotExist:
-        raise ClientNotFound(inner_id)
-    _calculate_client_total_spent(client)
+        raise ClientNotFound(db_inner_id)
     actual_discount = _get_actual_discount(client.total_spent)
-    print(client.last_operation_date)
     user_data = {
         'id': client.id,
         'name': client.name,
         'phone_number': client.phone_number,
-        'code': client.actual_code if _code_is_actual(client.code_expires_at) else "EXPIRED",
+        'code': client.actual_code if _code_is_actual(client.code_expires_at) else "None",
         'total_spent': client.total_spent,
         'discount_level': actual_discount.name,
         'discount': actual_discount.discount_percent,
         'custom_discount': client.custom_discount,
-        'overall_discount': actual_discount.discount_percent + client.custom_discount,
-        'last_operation_date': client.last_operation_date
+        'overall_discount': _get_overall_discount(actual_discount.discount_percent, client.custom_discount), #actual_discount.discount_percent + client.custom_discount,
+        'last_operation_date': _change_time_to_actual_tz(client.last_operation_date)#client.last_operation_date
     }
     return user_data
 
-def get_all_client_notes(client) -> list:
+def get_all_client_notes(client_id) -> list:
     result = []
-    notes = ClientNote.objects.filter(client=client)
+    notes = ClientNote.objects.filter(client_id=client_id)
     for note in notes:
+        actual_time = _change_time_to_actual_tz(note.created_at)
         temp = {
             'id': note.id,
-            'text' : f"[{note.created_at.strftime('%d-%m-%Y %H:%M')}] {note.text}"
+            'text' : f"[{actual_time}] {note.text}"
         }
         result.append(temp)
     return result
 
-def get_all_client_operations(client) -> list:
+def get_all_client_operations(client_id) -> list:
     result = []
-    operations = Operation.objects.filter(client=client)
+    operations = Operation.objects.filter(client_id=client_id)
     for oper in operations:
+        actual_time = _change_time_to_actual_tz(oper.operation_date)
         temp = {
             'id' : oper.id,
-            'text': f"[{oper.operation_date.strftime('%d-%m-%Y %H:%M')}] [{oper.operation_type}] <------> {oper.amount}"
+            'text': f"[{actual_time}] [{oper.operation_type}] <------> {oper.amount}"
         }
         result.append(temp)
     return result
@@ -164,41 +188,49 @@ def get_all_client_operations(client) -> list:
 def add_new_note(client_id, note_text):
     if not note_text:
         return
-
-    client = _get_client_by_inner_id(client_id)
     ClientNote.objects.create(
-        client=client,
+        client_id=client_id,
         text=note_text,
     )
 
 def delete_note(note_id, client_id):
-    client = _get_client_by_inner_id(client_id)
-    ClientNote.objects.filter(id=note_id, client=client).delete()
+    deleted_count, details = ClientNote.objects.filter(id=note_id, client_id=client_id).delete()
+    if deleted_count > 0:
+        print("Deleted records -> ", details) #TODO: logger info
+    else:
+        raise NotExistForDeleting(note_id)
 
 def add_new_operation(operation_amount, operation_type, client_id):
     if not operation_amount or not int(operation_amount):
-        return
+        raise WrongOperationValue()
     if len(operation_amount) > 5:
         raise OperationAmountOverLimit()
 
     client = _get_client_by_inner_id(client_id)
-
-    if operation_type == "purchase":
-        Operation.objects.create(
-            client=client,
-            operation_type=OperationType.PURCHASE,
-            amount=operation_amount
-        )
-    else:
-        Operation.objects.create(
-            client=client,
-            operation_type=OperationType.REFUND,
-            amount=operation_amount
-        )
-    client.set_last_operation_date()
-    _calculate_client_total_spent(client)
+    with transaction.atomic():
+        if operation_type == "purchase":
+            Operation.objects.create(
+                client=client,
+                operation_type=OperationType.PURCHASE,
+                amount=operation_amount
+            )
+        elif operation_type == "refund":
+            Operation.objects.create(
+                client=client,
+                operation_type=OperationType.REFUND,
+                amount=operation_amount
+            )
+        last_operation_date = _get_last_actual_operation_date(client_id)
+        client.set_last_operation_date(last_operation_date)
+        _calculate_client_total_spent(client)
 
 def delete_operation(operation_id, client_id):
     client = _get_client_by_inner_id(client_id)
-    Operation.objects.filter(id=operation_id, client=client).delete()
-    _calculate_client_total_spent(client)
+    deleted_count, details = Operation.objects.filter(id=operation_id, client=client).delete()
+    if deleted_count > 0:
+        last_operation_date = _get_last_actual_operation_date(client_id)
+        client.set_last_operation_date(last_operation_date)
+        _calculate_client_total_spent(client)
+        print("Deleted records -> ", details) #TODO: logger info
+    else:
+        raise NotExistForDeleting(operation_id)

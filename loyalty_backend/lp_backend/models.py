@@ -1,14 +1,10 @@
 from django.db import models
-from django.utils.timezone import now
-
 
 # Create your models here.
 
 class OperationType(models.TextChoices):
     PURCHASE = 'PURCHASE'
     REFUND = 'REFUND'
-    BONUS = 'BONUS'
-
 
 class Client(models.Model):
     name = models.CharField(max_length=100, verbose_name='Client Name')
@@ -26,15 +22,15 @@ class Client(models.Model):
     def change_code(self, code, time):
         self.actual_code = code
         self.code_expires_at = time
-        self.save()
+        self.save(update_fields=['actual_code', 'code_expires_at'])
 
-    def set_last_operation_date(self):
-        self.last_operation_date = now()
-        self.save()
+    def set_last_operation_date(self, last_operation_date):
+        self.last_operation_date = last_operation_date
+        self.save(update_fields=['last_operation_date'])
 
     def set_total_spent(self, value):
         self.total_spent = value
-        self.save()
+        self.save(update_fields=['total_spent'])
 
 class Operation(models.Model):
     client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name='Operation for -> ')

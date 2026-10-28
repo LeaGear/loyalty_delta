@@ -25,8 +25,7 @@ def client_page_view(request, client_id):
 
 @require_GET
 def search_client_view(request):
-    search_data = request.GET.dict()
-    client_param = search_data.get('client-param', '').strip()
+    client_param = request.GET.get('client-param', '').strip()
     if not client_param:
         return redirect('client_loyalty_page')
     try:
@@ -40,8 +39,7 @@ def search_client_view(request):
 @require_POST
 def add_note_view(request, client_id):
     try:
-        new_note_data = request.POST.dict()
-        note_text = new_note_data.get('note-text', '').strip()
+        note_text = request.POST.get('note-text', '').strip()
         add_new_note(client_id, note_text)
         messages.success(request, 'Note added successfully!')
     except ServiceError as e:
@@ -61,9 +59,8 @@ def del_note_view(request, client_id, note_id):
 @require_POST
 def add_operation_view(request, client_id):
     try:
-        new_operation_data = request.POST.dict()
-        operation_amount = new_operation_data.get('oper-amount', '').strip()
-        operation_type = new_operation_data.get('oper-type', '').strip()
+        operation_amount = request.POST.get('oper-amount', '').strip()
+        operation_type = request.POST.get('oper-type', '').strip()
         add_new_operation(operation_amount, operation_type, client_id)
         messages.success(request, 'Operation added successfully!')
     except ServiceError as e:
@@ -74,7 +71,7 @@ def add_operation_view(request, client_id):
 def del_operation_view(request, client_id, operation_id):
     try:
         delete_operation(operation_id, client_id)
-        messages.success(request, 'operation deleted successfully!')
+        messages.success(request, 'Operation deleted successfully!')
     except ServiceError as e:
         messages.error(request, error_text(e))
     return redirect('client_page', client_id)

@@ -27,3 +27,9 @@ class InvalidSearchInput(ServiceError):
 class OperationAmountOverLimit(ServiceError):
     pass
 
+class WrongOperationValue(ServiceError):
+    pass
+
+class NotExistForDeleting(ServiceError):
+    pass
+

@@ -1,6 +1,7 @@
 import os
 
 from dotenv import load_dotenv
+from zoneinfo import ZoneInfo
 
 load_dotenv()
 
@@ -19,3 +20,5 @@ API_REQUESTS = {
     "get_user_code" : BACKEND_POINT + "/loyalty_code/{}",
     "user_data" : BACKEND_POINT + "/user_data/{}",
 }
+
+ACTUAL_TZ = ZoneInfo("Europe/Kyiv")
