@@ -1,7 +1,7 @@
 
-from lp_backend.exceptions import ExpiredCode, ClientNotFound, ClientAlreadyExists, CodeGenerationFailed, \
+from lp_backend.exceptions import ExpiredCode, CodeGenerationFailed, \
     RegistrationError, IncorrectNumber, ClientNotFound, ClientAlreadyExists, OperationAmountOverLimit, \
-    InvalidSearchInput, WrongOperationValue, NotExistForDeleting
+    InvalidSearchInput, WrongOperationValue, NotExistForDeleting, InvalidNote
 
 ERROR_TEXTS = {
     ExpiredCode: "Code has expired, ask the client to generate a new one.",
@@ -14,6 +14,7 @@ ERROR_TEXTS = {
     OperationAmountOverLimit: "Amount is too large.",
     WrongOperationValue: "Wrong add_operation value.",
     NotExistForDeleting: "Record was not deleted. Not found in DB",
+    InvalidNote: "Note has been sent without message"
 }
 
 def error_text(exc):

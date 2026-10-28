@@ -33,3 +33,5 @@ class WrongOperationValue(ServiceError):
 class NotExistForDeleting(ServiceError):
     pass
 
+class InvalidNote(ServiceError):
+    pass

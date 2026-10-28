@@ -11,7 +11,23 @@
         <div class="site-name">
             <div class="spacer">TEMP</div>
             <div class="page-name">CHECKER</div>
-            <div class="spacer">TEMP</div>
+            <div>
+                {% if vendor.is_authenticated %}
+                    <form class="logout-form" action="{% url 'logout' %}" method="POST">
+                        {% csrf_token %}
+                        <button class="logout-btn" type="submit">
+                            {{ vendor.username }} LOG OUT
+                        </button>
+                    </form>
+                {% else %}
+                    <form class="login-form" action="{% url 'login' %}" method="POST">
+                        {% csrf_token %}
+                        <button class="login-btn" type="submit">
+                            LOG IN
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
         <div class="site-navigation">
             <div>Navigation</div>

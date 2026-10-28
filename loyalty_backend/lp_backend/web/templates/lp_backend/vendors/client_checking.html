@@ -17,7 +17,7 @@
                 <form id="user-params-form" action="{% url 'search_client' %}" method="GET" class="find-user-part">
                     <label class="fuc-label" for="field-client-param" >Search client: </label>
                     <input class="fuc-input" id="field-client-param"
-                           name="client-param" type="text" maxlength="13" inputmode="numeric" pattern="+[0-9]*">
+                           name="client-param" type="text" maxlength="20" inputmode="numeric">
                     <button type="submit" class="submit-btn">
                         SUBMIT
                     </button>
@@ -30,7 +30,7 @@
                 {% if user_info %}
                     {% for oper in user_info.operations %}
                         <li class="note-record">
-                            <form id="oper-del" action="{% url 'del_operation' client_id=user_info.id operation_id=oper.id %}" method="POST">
+                            <form class="oper-del" action="{% url 'del_operation' client_id=user_info.id operation_id=oper.id %}" method="POST">
                                 {% csrf_token %}
                                 <button class="delete-oper-btn" type="submit">x</button>
                                 {{ oper.text }}
@@ -41,7 +41,7 @@
                             <form id="oper-form" action="{% url 'add_operation' client_id=user_info.id %}" method="POST">
                                 {% csrf_token %}
                                 <input class="note-input" id="field-operation" name="oper-amount" type="text"
-                                       maxlength="13" inputmode="numeric" pattern="[0-9]*">
+                                       maxlength="13" inputmode="numeric" required>
                                 <select class="oper-type-select" name="oper-type">
                                     <option value="purchase">PURCHASE</option>
                                     <option value="refund">REFUND</option>
@@ -65,7 +65,7 @@
                     {% if user_info %}
                         {% for note in user_info.notes %}
                         <li class="note-record">
-                            <form id="note-del" action="{% url 'del_note' client_id=user_info.id note_id=note.id%}" method="POST">
+                            <form class="note-del" action="{% url 'del_note' client_id=user_info.id note_id=note.id%}" method="POST">
                                 {% csrf_token %}
                                 <button class="delete-note-btn" type="submit">x</button>
                                 {{ note.text }}

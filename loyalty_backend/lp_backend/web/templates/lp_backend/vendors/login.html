@@ -1,0 +1,59 @@
+{% extends 'lp_backend/base.html' %}
+
+{% block title%}LOG IN{% endblock %}
+
+{% block content %}
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <h2>Авторизация</h2>
+                <p>Панель управления кассира</p>
+            </div>
+
+            {% if messages %}
+                <div class="login-alerts">
+                    {% for message in messages %}
+                        <div class="login-alert login-alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form action="{% url 'login' %}" method="POST" class="login-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="username">Имя пользователя / Логин</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="login-input"
+                        placeholder="Введите логин"
+                        required
+                        autocomplete="username"
+                        autofocus
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="login-input"
+                        placeholder="••••••••"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <button type="submit" class="login-submit-btn">
+                    Войти в систему
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
