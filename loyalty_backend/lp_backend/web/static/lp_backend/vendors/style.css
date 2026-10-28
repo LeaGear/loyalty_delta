@@ -1,20 +1,20 @@
+/* Базовые настройки */
 html, body {
-    background-color: gray;
+    background-color: #121216;
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     height: 100%;
-    overflow: auto;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
+
 body {
     display: flex;
     flex-direction: column;
 }
-/*Utilities*/
-.spacer{
-    visibility: hidden;
-}
 
-/*TECH MESSAGES POPUP*/
+/* Тост-уведомления */
 .toast-popup {
     display: flex;
     flex-direction: column;
@@ -22,228 +22,364 @@ body {
     bottom: 20px;
     left: 20px;
     gap: 10px;
-    background-color: #2c3e50;
+    background-color: #1e1e24;
     color: #ffffff;
     padding: 15px 20px;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border: 1px solid #2d2d35;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     z-index: 9999;
 }
-.to-ok-btn-div{
-    display: flex;
-    flex: 1;
-    justify-content: right;
-}
 .toast-ok-btn {
-    background-color: #27ae60;
+    background-color: #10b981;
     color: #ffffff;
-    bottom: 6px;
-    right: 14px;
-    padding: 3px 5px;
+    padding: 4px 8px;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
-    user-select: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: none;
+    align-self: flex-end;
 }
-.toast-toggle-checkbox{
+.toast-toggle-checkbox {
     display: none;
 }
 .toast-toggle-checkbox:checked ~ .toast-popup {
     display: none;
 }
 
-/*Head of page*/
+/* Главный контейнер страницы */
+.page-main {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    padding: 24px;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center; /* Центрируем контент (включая карточку логина) по вертикали */
+    overflow: hidden;
+}
+
+/* Шапка страницы с идеальным центрированием через Grid */
 .page-head {
     display: flex;
     flex-direction: column;
-    flex: 0 0 10%;
-    justify-content: center;
-    background-color: blue;
-}
-.site-name{
-    background-color: purple;
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.site-navigation{
-    background-color: coral;
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-/*MAin page body */
-.page-main{
-    display: flex;
-    flex: 1;
-    min-height: 0;
-    align-items: stretch;
-    padding: 2%;
-    justify-content: center;
+    background-color: #16161a;
+    border-bottom: 1px solid #2d2d35;
+    padding: 0 24px;
     box-sizing: border-box;
-    background-color: green;
+    flex-shrink: 0;
 }
 
-.client-checker-window {
-    flex: 1;
+.site-name {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: 60px;
+    border-bottom: 1px solid #2d2d35;
+}
+
+.header-left {
+    justify-self: start;
+}
+
+.page-name {
+    justify-self: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.05em;
+}
+
+.header-right {
+    justify-self: end;
     display: flex;
-    min-height: 0;
-    gap: 20px;
-    padding: 3%;
-    border-radius: 20px;
-    background-color: yellow;
+    align-items: center;
 }
 
-/*Client checker - CHILDREN*/
+.site-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    font-size: 0.9rem;
+    color: #8a8a93;
+}
 
+/* Кнопки входа / выхода в шапке */
+.logout-btn, .login-btn {
+    background-color: transparent;
+    color: #b0b0b8;
+    border: 1px solid #3a3a45;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #3b181a;
+    color: #fca5a5;
+    border-color: #7f1d1d;
+}
+
+.login-btn:hover {
+    background-color: #4f46e5;
+    color: #ffffff;
+    border-color: #4f46e5;
+}
+
+.logout-form, .login-form-header {
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Подвал страницы */
+.page-footer {
+    background-color: #16161a;
+    border-top: 1px solid #2d2d35;
+    display: flex;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: #6b7280;
+    flex-shrink: 0;
+}
+
+/* Окно панели кассира (две колонки) */
+.client-checker-window {
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    gap: 24px;
+    box-sizing: border-box;
+    min-height: 0;
+    align-self: stretch; /* Возвращаем растягивание для кассы */
+}
+
+/* Левая колонка: Данные клиента + Поиск */
 .user-info-part {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    flex: 0.4;
+    gap: 20px;
+    flex: 0 0 350px;
 }
+
+/* Карточка данных клиента */
+.find-user-data {
+    display: flex;
+    flex-direction: column;
+    background-color: #1e1e24;
+    border: 1px solid #2d2d35;
+    border-radius: 12px;
+    padding: 24px;
+    gap: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.user-data-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    color: #b0b0b8;
+    border-bottom: 1px solid #2d2d35;
+    padding-bottom: 8px;
+}
+
+.user-data-label strong {
+    color: #ffffff;
+}
+
+/* Карточка поиска */
+.find-user-search {
+    display: flex;
+    background-color: #1e1e24;
+    border: 1px solid #2d2d35;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.find-user-part {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+}
+
+.fuc-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #b0b0b8;
+}
+
+.fuc-input {
+    background-color: #141418;
+    border: 1px solid #3a3a45;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 1rem;
+    color: #ffffff;
+    outline: none;
+}
+
+.fuc-input:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+/* Правая часть: Операции и Заметки */
 .note-trans-part {
     display: flex;
     flex: 1;
+    gap: 20px;
     min-height: 0;
-    background-color: orange;
 }
-/*FIND USER tab - CHILDREN*/
-.find-user-data {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    border-style: dotted;
-    border-width: 1px;
-    border-radius: 20px;
-    margin: 5px;
-    align-self: stretch;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    background-color: white;
-}
-.find-user-search {
-    display: flex;
-    flex: 1;
-    border-style: dotted;
-    border-width: 1px;
-    border-radius: 20px;
-    margin: 5px;
-    align-self: stretch;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    background-color: white;
-}
-.user-data-label{
-    display: flex;
-    flex: 1;
-    font-size: 24px;
-    align-items: center;
-    justify-content: center;
-}
-.fuc-input{
-    height: 24px;
-    font-size: 20px;
-    width: 200px;
-}
-.copy-btn {
-    height: 30px;
-}
-.submit-btn{
-    height: 36px;
-    width: 120px;
-}
-/*USER DATA tab - CHILDREN*/
-.notes-part{
-    display: flex;
-    flex: 0.4;
-    min-height: 0;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: red;
-}
-.transactions-part{
-    display: flex;
-    flex: 0.6;]
-    min-height: 0;
-    align-items: center;
-    justify-content: center;
-    background-color: blue;
-}
-/* LEFT USER DATA  side*/
 
-.total-discount{
+.transactions-part, .notes-part {
     display: flex;
-    flex: 0.3;
+    flex: 1;
     flex-direction: column;
-    align-self: stretch;
-    align-items: center;
-    justify-content: center;
-    background-color: green;
+    background-color: #1e1e24;
+    border: 1px solid #2d2d35;
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-.user-notes{
+
+/* Списки транзакций и заметок */
+.note-list {
     display: flex;
+    flex-direction: column;
     flex: 1;
-    min-height: 0;
-    align-self: stretch;
-    align-items: center;
-    justify-content: center;
-}
-.tt-dis{
-    font-size:30px;
-}
-.note-list{
-    flex: 1;
-    min-height: 0;
-    align-self: stretch;
-    padding: 10px;
-    margin: 5px;
-    scroll-behavior: smooth;
-    border-radius: 20px;
-    list-style: None;
+    margin: 0;
+    padding: 0;
+    list-style: none;
     overflow-y: auto;
-    background-color: violet;
+    gap: 10px;
+    scroll-behavior: smooth;
+    min-height: 0;
 }
-.note-record{
-    margin-bottom: 8px;
-    border-bottom: 1px dashed #4ade80;
-    padding-bottom: 8px;
 
-}
-/* RIGHT  side */
-
-
-/*Basement of page */
-.page-footer {
-    background-color: red;
+.note-record {
+    background-color: #141418;
+    border: 1px solid #2d2d35;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.9rem;
     display: flex;
-    flex: 0 0 5%;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Формы внутри записей и строки добавления */
+.oper-del, .note-del {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+
+/* Кнопки удаления (крестики) */
+.delete-oper-btn, .delete-note-btn {
+    background-color: transparent;
+    color: #ef4444;
+    border: 1px solid #7f1d1d;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
     align-items: center;
     justify-content: center;
-}
-.footer-data{
-    flex: 1;
-    background-color: white;
+    margin-right: 10px;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
 }
 
-/* LOGIN */
-/* Контейнер по центру экрана */
+.delete-oper-btn:hover, .delete-note-btn:hover {
+    background-color: #3b181a;
+}
+
+/* Поля ввода для добавления операций/заметок */
+#oper-form, #note-form {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid #2d2d35;
+    flex-shrink: 0;
+}
+
+.note-input {
+    flex: 1;
+    background-color: #141418;
+    border: 1px solid #3a3a45;
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.note-input:focus {
+    border-color: #4f46e5;
+}
+
+.oper-type-select {
+    background-color: #141418;
+    border: 1px solid #3a3a45;
+    border-radius: 6px;
+    color: #ffffff;
+    padding: 0 8px;
+    outline: none;
+}
+
+/* Общие кнопки (Submit, Add) */
+.submit-btn, .add-oper-btn, .add-note-btn {
+    background-color: #4f46e5;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.submit-btn:hover, .add-oper-btn:hover, .add-note-btn:hover {
+    background-color: #4338ca;
+}
+
+/* Заглушки, когда пользователь не выбран */
+.empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* LOGIN (строго по центру без скролла) */
 .login-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 80px); /* Выравнивание с учетом вероятного шапки */
-    padding: 20px;
+    width: 100%;
+    height: 100%;
     box-sizing: border-box;
 }
 
-/* Карточка карточки входа */
 .login-card {
     background-color: #1e1e24;
     border: 1px solid #2d2d35;
@@ -253,6 +389,7 @@ body {
     max-width: 400px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     color: #e0e0e0;
+    box-sizing: border-box;
 }
 
 .login-header {
@@ -273,21 +410,30 @@ body {
     color: #8a8a93;
 }
 
-/* Поля ввода */
-.form-group {
+/* Форма авторизации */
+.login-form {
     display: flex;
     flex-direction: column;
-    margin-bottom: 20px;
+    width: 100%;
+    gap: 16px;
 }
 
-.form-group label {
+.login-form .form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.login-form .form-group label {
     font-size: 0.85rem;
     font-weight: 500;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     color: #b0b0b8;
 }
 
-.login-input {
+.login-form .login-input {
+    width: 100%;
     background-color: #141418;
     border: 1px solid #3a3a45;
     border-radius: 6px;
@@ -295,23 +441,19 @@ body {
     font-size: 0.95rem;
     color: #ffffff;
     outline: none;
+    box-sizing: border-box;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.login-input:focus {
+.login-form .login-input:focus {
     border-color: #4f46e5;
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
-.login-input::placeholder {
-    color: #555562;
-}
-
-/* Кнопка отправки */
-.login-submit-btn {
+.login-form .login-submit-btn {
     width: 100%;
     padding: 12px;
-    margin-top: 10px;
+    margin-top: 8px;
     background-color: #4f46e5;
     color: #ffffff;
     border: none;
@@ -320,14 +462,11 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
+    box-sizing: border-box;
 }
 
-.login-submit-btn:hover {
+.login-form .login-submit-btn:hover {
     background-color: #4338ca;
-}
-
-.login-submit-btn:active {
-    transform: scale(0.99);
 }
 
 /* Блок уведомлений / ошибок */

@@ -1,6 +1,6 @@
 {% extends 'lp_backend/base.html' %}
 
-{% block title%}LOG IN{% endblock %}
+{% block title %}LOG IN{% endblock %}
 
 {% block content %}
     <div class="login-wrapper">
@@ -22,7 +22,6 @@
 
             <form action="{% url 'login' %}" method="POST" class="login-form">
                 {% csrf_token %}
-
                 <div class="form-group">
                     <label for="username">Имя пользователя / Логин</label>
                     <input

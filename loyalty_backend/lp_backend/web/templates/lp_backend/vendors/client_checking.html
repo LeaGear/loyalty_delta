@@ -1,92 +1,87 @@
 {% extends 'lp_backend/base.html' %}
 
-{% block title%}Client Checker{% endblock %}
+{% block title %}Client Checker{% endblock %}
 
 {% block content %}
     <div class="client-checker-window">
+        <!-- Левая колонка: Профиль и Поиск -->
         <div class="user-info-part">
             <div class="find-user-data">
-                <label class="user-data-label">Name: {% if user_info %}{{user_info.name}}{% else %}User{% endif %}</label>
-                <label class="user-data-label">ID: {% if user_info %}{{user_info.id}}{% else %}None{% endif %}</label>
-                <label class="user-data-label">Code: {% if user_info %}{{user_info.code}}{% else %}None{% endif %}</label>
-                <label class="user-data-label">Number: {% if user_info %}{{user_info.phone_number}}{% else %}None{% endif %}</label>
-                <label class="user-data-label"><strong>Total spent:</strong> {{ user_info.total_spent|default:"0" }} UAH</label>
-                <label class="user-data-label"><strong>Current Discount:</strong> {{ user_info.discount|default:"0" }}%</label>
+                <div class="user-data-label"><span>Name:</span> <strong>{% if user_info %}{{user_info.name}}{% else %}—{% endif %}</strong></div>
+                <div class="user-data-label"><span>ID:</span> <strong>{% if user_info %}{{user_info.id}}{% else %}—{% endif %}</strong></div>
+                <div class="user-data-label"><span>Code:</span> <strong>{% if user_info %}{{user_info.code}}{% else %}—{% endif %}</strong></div>
+                <div class="user-data-label"><span>Number:</span> <strong>{% if user_info %}{{user_info.phone_number}}{% else %}—{% endif %}</strong></div>
+                <div class="user-data-label"><span>Total spent:</span> <strong>{{ user_info.total_spent|default:"0" }} UAH</strong></div>
+                <div class="user-data-label"><span>Base Discount:</span> <strong>{{ user_info.discount|default:"0" }}%</strong></div>
+                <div class="user-data-label"><span>Custom Discount:</span> <strong>{{ user_info.custom_discount|default:"0" }}%</strong></div>
+                <div class="user-data-label"><strong><span>Overall Discount:</span></strong><strong>{{ user_info.overall_discount|default:"0" }}%</strong></div>
             </div>
+
             <div class="find-user-search">
                 <form id="user-params-form" action="{% url 'search_client' %}" method="GET" class="find-user-part">
-                    <label class="fuc-label" for="field-client-param" >Search client: </label>
-                    <input class="fuc-input" id="field-client-param"
-                           name="client-param" type="text" maxlength="20" inputmode="numeric">
-                    <button type="submit" class="submit-btn">
-                        SUBMIT
-                    </button>
+                    <label class="fuc-label" for="field-client-param">Search client:</label>
+                    <input class="fuc-input" id="field-client-param" name="client-param" type="text" maxlength="20" inputmode="numeric" placeholder="ID, Phone or Code">
+                    <button type="submit" class="submit-btn">SUBMIT</button>
                 </form>
             </div>
         </div>
+
+        <!-- Правая часть: Транзакции и Заметки -->
         <div class="note-trans-part">
+            <!-- Блок транзакций -->
             <div class="transactions-part">
+                <h3 style="margin-top:0; color:#fff; font-size:1.1rem; margin-bottom:14px;">Operations</h3>
                 <ul class="note-list">
-                {% if user_info %}
-                    {% for oper in user_info.operations %}
-                        <li class="note-record">
-                            <form class="oper-del" action="{% url 'del_operation' client_id=user_info.id operation_id=oper.id %}" method="POST">
-                                {% csrf_token %}
-                                <button class="delete-oper-btn" type="submit">x</button>
-                                {{ oper.text }}
-                            </form>
-                        </li>
+                    {% if user_info %}
+                        {% for oper in user_info.operations %}
+                            <li class="note-record">
+                                <form class="oper-del" action="{% url 'del_operation' client_id=user_info.id operation_id=oper.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <span>{{ oper.text }}</span>
+                                    <button class="delete-oper-btn" type="submit" title="Delete operation">×</button>
+                                </form>
+                            </li>
                         {% endfor %}
-                        <li class="note-record">
+                        <li class="note-record" style="background: transparent; border: none; padding: 0;">
                             <form id="oper-form" action="{% url 'add_operation' client_id=user_info.id %}" method="POST">
                                 {% csrf_token %}
-                                <input class="note-input" id="field-operation" name="oper-amount" type="text"
-                                       maxlength="13" inputmode="numeric" required>
+                                <input class="note-input" id="field-operation" name="oper-amount" type="text" maxlength="13" inputmode="numeric" placeholder="Amount" required>
                                 <select class="oper-type-select" name="oper-type">
                                     <option value="purchase">PURCHASE</option>
                                     <option value="refund">REFUND</option>
                                 </select>
-                                <button class="add-oper-btn" type="submit">
-                                add operation
-                                </button>
-                            </form>
-                        </li>
-                {% else %}
-                    <li>
-                        <label>
-                            First search user
-                        </label>
-                    </li>
-                {% endif %}
-                </ul>
-            </div>
-            <div class="notes-part">
-                <ul class="note-list">
-                    {% if user_info %}
-                        {% for note in user_info.notes %}
-                        <li class="note-record">
-                            <form class="note-del" action="{% url 'del_note' client_id=user_info.id note_id=note.id%}" method="POST">
-                                {% csrf_token %}
-                                <button class="delete-note-btn" type="submit">x</button>
-                                {{ note.text }}
-                            </form>
-                        </li>
-                        {% endfor %}
-                        <li class="note-record">
-                            <form id="note-form" action="{% url 'add_note' client_id=user_info.id %}" method="POST">
-                                {% csrf_token %}
-                                <input class="note-input" id="field-note" name="note-text" type="text">
-                                <button class="add-note-btn" type="submit">
-                                add note
-                                </button>
+                                <button class="add-oper-btn" type="submit">Add</button>
                             </form>
                         </li>
                     {% else %}
-                    <li>
-                        <label>
-                            Firstly search client
-                        </label>
-                    </li>
+                        <li class="empty-state">First search user</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Блок заметок -->
+            <div class="notes-part">
+                <h3 style="margin-top:0; color:#fff; font-size:1.1rem; margin-bottom:14px;">Notes</h3>
+                <ul class="note-list">
+                    {% if user_info %}
+                        {% for note in user_info.notes %}
+                            <li class="note-record">
+                                <form class="note-del" action="{% url 'del_note' client_id=user_info.id note_id=note.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <span>{{ note.text }}</span>
+                                    <button class="delete-note-btn" type="submit" title="Delete note">×</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                        <li class="note-record" style="background: transparent; border: none; padding: 0;">
+                            <form id="note-form" action="{% url 'add_note' client_id=user_info.id %}" method="POST">
+                                {% csrf_token %}
+                                <input class="note-input" id="field-note" name="note-text" type="text" placeholder="New note...">
+                                <button class="add-note-btn" type="submit">Add</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="empty-state">Firstly search client</li>
                     {% endif %}
                 </ul>
             </div>

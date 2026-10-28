@@ -8,7 +8,7 @@ from lp_backend.exceptions import ServiceError
 from lp_backend.services import get_client_id_by_param, get_client_data, add_new_note, delete_note, add_new_operation, delete_operation, get_all_client_notes, get_all_client_operations
 from lp_backend.web.messages import error_text
 
-@require_POST
+@require_GET
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('client_loyalty_page')
@@ -19,10 +19,10 @@ def login_view(request):
     user = authenticate(request, username=username, password=password)
     if user is not None and user.is_staff:
         login(request, user)
-        messages.success(request, f'С возвращением, {user.username}!')
+        #messages.success(request, f'С возвращением, {user.username}!')
         return redirect('client_loyalty_page')
-    else:
-        messages.error(request, "Wrong login or password!")
+    #else:
+        #messages.error(request, "Wrong login or password!")
 
     return render(request, 'lp_backend/vendors/login.html')
 
