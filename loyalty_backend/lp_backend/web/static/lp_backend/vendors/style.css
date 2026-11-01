@@ -294,7 +294,7 @@ body {
 }
 
 /* Списки транзакций и заметок */
-.note-list {
+.note-oper-list {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -307,7 +307,7 @@ body {
     min-height: 0;
 }
 
-.note-record {
+.oper-record {
     background-color: #141418;
     border: 1px solid #2d2d35;
     border-radius: 8px;
@@ -317,9 +317,28 @@ body {
     align-items: center;
     flex-shrink: 0;
 }
+.note-record {
+    background-color: #141418;
+    border: 1px solid #2d2d35;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.9rem;
+    display: flex;
+    display-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+}
 
 /* Формы внутри записей и строки добавления */
-.oper-del, .note-del {
+.note-del{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    justify-content: space-between;
+}
+.oper-del{
     display: flex;
     align-items: center;
     width: 100%;
@@ -534,12 +553,12 @@ body {
 }
 
 /* Блоки операций */
-.note-record.refund{
+.oper-record.refund{
     background-color: rgba(239, 68, 68, 0.15);
     color: #f87171;
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
-.note-record.purchase{
+.oper-record.purchase{
     background-color: rgba(16, 185, 129, 0.15);
     color: #34d399;
     border: 1px solid rgba(16, 185, 129, 0.3);
@@ -565,4 +584,22 @@ body {
     font-size: 0.8rem;
     color: #ffffff;
     padding: 2px 6px;
+}
+
+/* Кастом заметок*/
+.note-content{
+    display: flex;
+    flex: 1;
+    width: 100%;
+    justify-content: space-between;
+}
+.note-date {
+    padding: 3px 8px;
+    border: 1px solid #8f8f8f;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+    font-size: 0.85rem;
 }

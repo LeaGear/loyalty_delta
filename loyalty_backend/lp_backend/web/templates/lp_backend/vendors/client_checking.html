@@ -31,10 +31,10 @@
             <!-- Блок транзакций -->
             <div class="transactions-part">
                 <h3 style="margin-top:0; color:#fff; font-size:1.1rem; margin-bottom:14px;">Operations</h3>
-                <ul class="note-list">
+                <ul class="note-oper-list">
                     {% if user_info %}
                         {% for oper in user_info.operations %}
-                            <li class="note-record {% if oper.type == 'PURCHASE' %}purchase{% else %}refund{% endif %}">
+                            <li class="oper-record {% if oper.type == 'PURCHASE' %}purchase{% else %}refund{% endif %}">
                                 <form class="oper-del" action="{% url 'del_operation' client_id=user_info.id operation_id=oper.id %}" method="POST">
                                     {% csrf_token %}
                                     <div class="oper-content">
@@ -67,14 +67,23 @@
             <!-- Блок заметок -->
             <div class="notes-part">
                 <h3 style="margin-top:0; color:#fff; font-size:1.1rem; margin-bottom:14px;">Notes</h3>
-                <ul class="note-list">
+                <ul class="note-oper-list">
                     {% if user_info %}
                         {% for note in user_info.notes %}
                             <li class="note-record">
                                 <form class="note-del" action="{% url 'del_note' client_id=user_info.id note_id=note.id %}" method="POST">
                                     {% csrf_token %}
-                                    <span>[{{ note.date }} "{{ note.creator }}"]{{ note.text }}</span>
-                                    <button class="delete-note-btn" type="submit" title="Delete note">×</button>
+                                    <div class="note-content">
+                                        <div>
+                                            <span class="note-date">{{ note.date }} | @{{ note.creator }}</span>
+                                        </div>
+                                        <div>
+                                            <button class="delete-note-btn" type="submit" title="Delete note">×</button>
+                                        </div>
+                                    </div>
+                                    <div class="note-content-text">
+                                        <span class="note-text">{{ note.text }}</span>
+                                    </div>
                                 </form>
                             </li>
                         {% endfor %}
