@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils.timezone import now
 # Create your models here.
 
 class OperationType(models.TextChoices):
@@ -36,16 +36,23 @@ class Operation(models.Model):
     client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name='Operation for -> ')
     operation_type = models.CharField(max_length=20, choices=OperationType.choices, default=OperationType.PURCHASE, verbose_name='Operation Type')
     amount = models.DecimalField(default=0, max_digits=7, decimal_places=2, verbose_name='Operation Amount')
-    operation_date = models.DateTimeField(auto_now_add=True, verbose_name='Operation Created Date')
-    #is_voided = models.BooleanField(default=False, verbose_name='Operation Voided')
-    #voided_at = models.DateTimeField(null=True, blank=True, verbose_name='Operation Voided Date')
-    # TODO: voided_by = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Operation Voided By')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Operation Created Date')
+    created_by = models.CharField(max_length=30, verbose_name='Created By')
+    is_voided = models.BooleanField(default=False, verbose_name='Operation Voided')
+    voided_at = models.DateTimeField(null=True, blank=True, verbose_name='Operation Voided Date')
+    voided_by = models.CharField(null=True, blank=True, max_length=30,  verbose_name='Operation Voided By')
 
     class Meta:
-        ordering = ['operation_date']
+        ordering = ['created_at']
 
     def __str__(self):
-        return f"{self.client} -> {self.operation_type} -> {self.amount} -> {self.operation_date}"
+        return f"{self.client} -> {self.operation_type} -> {self.amount} -> {self.created_at}"
+
+    def set_voided_status(self, voided_by):
+        self.is_voided = True
+        self.voided_at = now()
+        self.voided_by = voided_by
+        self.save(update_fields=['is_voided', 'voided_at', 'voided_by'])
 
 class DiscountTier(models.Model):
     name = models.CharField(max_length=30, verbose_name='Discount Tier Name')
@@ -62,6 +69,7 @@ class ClientNote(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Client Name')
     text = models.TextField(verbose_name='Client Text Note')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Client Creation Date')
+    created_by = models.CharField(max_length=30, verbose_name='Client Created By')
 
     class Meta:
         ordering = ['created_at']

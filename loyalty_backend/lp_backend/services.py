@@ -10,7 +10,7 @@ from lp_backend.models import Client, Operation, DiscountTier, ClientNote, Opera
 from lp_backend.constants import CODE_TTL, CODE_LENGTH, MAXIMUM_DISCOUNT_VALUE
 from lp_backend.exceptions import ClientNotFound, ClientAlreadyExists, CodeGenerationFailed, RegistrationError, \
     ExpiredCode, IncorrectNumber, InvalidSearchInput, OperationAmountOverLimit, WrongOperationValue, \
-    NotExistForDeleting, InvalidNote
+    NotExistForDeleting, InvalidNote, OperationNotFound
 
 
 def _code_is_actual(code_expires_at) -> bool:
@@ -32,10 +32,10 @@ def _get_actual_discount(total_spent) -> DiscountTier:
     return discount
 
 def _get_last_actual_operation_date(client_id) -> datetime | None:
-    last_operation = Operation.objects.filter(client_id=client_id).order_by('-operation_date').first()
+    last_operation = Operation.objects.filter(client_id=client_id).order_by('-created_at').first()
     if not last_operation:
         return None
-    return last_operation.operation_date
+    return last_operation.created_at
 
 def _get_overall_discount(db_percent, custom_bonus) -> int:
     summary = db_percent + custom_bonus
@@ -53,8 +53,8 @@ def _change_time_to_actual_tz(date: datetime) -> str | None:
 
 def _calculate_client_total_spent(client) -> None:
     result = Operation.objects.filter(client=client).aggregate(
-        total_purchases=Sum('amount', filter=Q(operation_type=OperationType.PURCHASE)),
-        total_refunds=Sum('amount', filter=Q(operation_type=OperationType.REFUND)),
+        total_purchases=Sum('amount', filter=Q(operation_type=OperationType.PURCHASE, is_voided=False)),
+        total_refunds=Sum('amount', filter=Q(operation_type=OperationType.REFUND, is_voided=False)),
     )
     purchase_sum = result['total_purchases'] or 0
     refund_sum = result['total_refunds'] or 0
@@ -154,8 +154,8 @@ def get_client_data(db_inner_id) -> dict:
         'discount_level': actual_discount.name,
         'discount': actual_discount.discount_percent,
         'custom_discount': client.custom_discount,
-        'overall_discount': _get_overall_discount(actual_discount.discount_percent, client.custom_discount), #actual_discount.discount_percent + client.custom_discount,
-        'last_operation_date': _change_time_to_actual_tz(client.last_operation_date)#client.last_operation_date
+        'overall_discount': _get_overall_discount(actual_discount.discount_percent, client.custom_discount),
+        'last_operation_date': _change_time_to_actual_tz(client.last_operation_date)
     }
     return user_data
 
@@ -167,6 +167,7 @@ def get_all_client_notes(client_id) -> list:
         temp = {
             'id': note.id,
             'date': actual_time,
+            'creator': note.created_by,
             'text' : note.text
         }
         result.append(temp)
@@ -176,23 +177,26 @@ def get_all_client_operations(client_id) -> list:
     result = []
     operations = Operation.objects.filter(client_id=client_id)
     for oper in operations:
-        actual_time = _change_time_to_actual_tz(oper.operation_date)
+        actual_time = _change_time_to_actual_tz(oper.created_at)
         temp = {
             'id' : oper.id,
             'amount' : oper.amount,
             'type' : oper.operation_type,
-            'date' : actual_time
+            'date' : actual_time,
+            'creator': oper.created_by
         }
-        result.append(temp)
+        if not oper.is_voided:
+            result.append(temp)
     return result
 
-def add_new_note(client_id, note_text):
+def add_new_note(client_id, note_text, creator_name):
     if not note_text:
         raise InvalidNote
     try:
         ClientNote.objects.create(
             client_id=client_id,
             text=note_text,
+            created_by=creator_name
         )
     except IntegrityError:
         raise ClientNotFound(client_id)
@@ -205,7 +209,7 @@ def delete_note(note_id, client_id):
         raise NotExistForDeleting(note_id)
 
 @transaction.atomic
-def add_new_operation(operation_amount, operation_type, client_id):
+def add_new_operation(operation_amount, operation_type, client_id, creator_name):
     if not operation_amount or not float(operation_amount):
         raise WrongOperationValue()
     if len(operation_amount) > 5:
@@ -219,13 +223,15 @@ def add_new_operation(operation_amount, operation_type, client_id):
         Operation.objects.create(
             client=client,
             operation_type=OperationType.PURCHASE,
-            amount=operation_amount
+            amount=operation_amount,
+            created_by=creator_name
         )
     elif operation_type == "refund":
         Operation.objects.create(
             client=client,
             operation_type=OperationType.REFUND,
-            amount=operation_amount
+            amount=operation_amount,
+            created_by=creator_name
         )
     else:
         raise WrongOperationValue(operation_type)
@@ -235,16 +241,16 @@ def add_new_operation(operation_amount, operation_type, client_id):
     _calculate_client_total_spent(client)
 
 @transaction.atomic
-def delete_operation(operation_id, client_id):
+def delete_operation(operation_id, client_id, deleter_name):
     try:
         client = Client.objects.select_for_update().get(id=client_id)
     except Client.DoesNotExist:
         raise ClientNotFound(client_id)
-    deleted_count, details = Operation.objects.filter(id=operation_id, client=client).delete()
-    if deleted_count > 0:
+    try:
+        operation = Operation.objects.get(id=operation_id, client=client)
+        operation.set_voided_status(deleter_name)
         last_operation_date = _get_last_actual_operation_date(client_id)
         client.set_last_operation_date(last_operation_date)
         _calculate_client_total_spent(client)
-        print("Deleted records -> ", details) #TODO: logger info
-    else:
-        raise NotExistForDeleting(operation_id)
+    except Operation.DoesNotExist:
+        raise OperationNotFound(operation_id)

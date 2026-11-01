@@ -34,17 +34,16 @@
                 <ul class="note-list">
                     {% if user_info %}
                         {% for oper in user_info.operations %}
-                            <li class="note-record">
+                            <li class="note-record {% if oper.type == 'PURCHASE' %}purchase{% else %}refund{% endif %}">
                                 <form class="oper-del" action="{% url 'del_operation' client_id=user_info.id operation_id=oper.id %}" method="POST">
                                     {% csrf_token %}
                                     <div class="oper-content">
-                                        <span class="oper-badge {% if oper.type == 'PURCHASE' %}purchase{% else %}refund{% endif %}">
-                                            {{ oper.type }}
-                                        </span>
-                                        <span class="oper-amount">{{ oper.amount }} UAH</span>
                                         <span class="oper-date">{{ oper.date }}</span>
+                                        <span class="oper-amount">{{ oper.amount }} UAH</span>
+                                        <span class="oper-author">@{{ oper.creator }}</span>
+                                        <button class="delete-oper-btn" type="submit" title="Delete operation">×</button>
                                     </div>
-                                    <button class="delete-oper-btn" type="submit" title="Delete operation">×</button>
+
                                 </form>
                             </li>
                         {% endfor %}
@@ -74,7 +73,7 @@
                             <li class="note-record">
                                 <form class="note-del" action="{% url 'del_note' client_id=user_info.id note_id=note.id %}" method="POST">
                                     {% csrf_token %}
-                                    <span>[{{ note.date }}] {{ note.text }}</span>
+                                    <span>[{{ note.date }} "{{ note.creator }}"]{{ note.text }}</span>
                                     <button class="delete-note-btn" type="submit" title="Delete note">×</button>
                                 </form>
                             </li>

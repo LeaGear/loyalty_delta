@@ -533,35 +533,36 @@ body {
     font-size: 0.9rem;
 }
 
-/* Бейдж типа операции */
-.oper-badge {
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-}
-
-.oper-badge.purchase {
-    background-color: rgba(16, 185, 129, 0.15);
-    color: #34d399;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.oper-badge.refund {
+/* Блоки операций */
+.note-record.refund{
     background-color: rgba(239, 68, 68, 0.15);
     color: #f87171;
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
-
+.note-record.purchase{
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
 /* Сумма */
 .oper-amount {
     font-weight: 600;
-    color: #ffffff;
 }
 
 /* Дата */
 .oper-date {
-    color: #8a8a93;
+    padding: 3px 8px;
+    border: 1px solid #8f8f8f;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #ffffff;
     font-size: 0.85rem;
+}
+/* Создатель записи */
+.oper-author {
+    font-size: 0.8rem;
+    color: #ffffff;
+    padding: 2px 6px;
 }
