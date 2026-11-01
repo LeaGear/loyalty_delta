@@ -35,7 +35,7 @@
                     {% if user_info %}
                         {% for oper in user_info.operations %}
                             <li class="oper-record {% if oper.type == 'PURCHASE' %}purchase{% else %}refund{% endif %}">
-                                <form class="oper-del" action="{% url 'del_operation' client_id=user_info.id operation_id=oper.id %}" method="POST">
+                                <form class="oper-del" action="{% url 'del_operation' client_id=user_info.id operation_id=oper.id %}" method="POST" onsubmit="return confirm('Delete?')">
                                     {% csrf_token %}
                                     <div class="oper-content">
                                         <span class="oper-date">{{ oper.date }}</span>
@@ -71,7 +71,7 @@
                     {% if user_info %}
                         {% for note in user_info.notes %}
                             <li class="note-record">
-                                <form class="note-del" action="{% url 'del_note' client_id=user_info.id note_id=note.id %}" method="POST">
+                                <form class="note-del" action="{% url 'del_note' client_id=user_info.id note_id=note.id %}" method="POST" onsubmit="return confirm('Delete?')">
                                     {% csrf_token %}
                                     <div class="note-content">
                                         <div>

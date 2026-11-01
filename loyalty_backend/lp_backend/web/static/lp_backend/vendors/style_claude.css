@@ -1,0 +1,666 @@
+/* ==========================================================================
+   Variables
+   ========================================================================== */
+:root {
+    --bg: #121216;
+    --bg-head: #16161a;
+    --card: #1e1e24;
+    --field: #141418;
+    --border: #2d2d35;
+    --border-field: #3a3a45;
+    --text: #e0e0e0;
+    --text-white: #ffffff;
+    --text-muted: #b0b0b8;
+    --text-dim: #8a8a93;
+    --accent: #4f46e5;
+    --accent-hover: #4338ca;
+    --danger: #ef4444;
+    --danger-bg: #3b181a;
+    --danger-border: #7f1d1d;
+    --danger-text: #fca5a5;
+    --ok: #10b981;
+    --radius: 12px;
+    --radius-sm: 6px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+button, input, select {
+    font-family: inherit;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Shared components
+   ========================================================================== */
+
+/* Cards */
+.find-user-data,
+.find-user-search,
+.transactions-part,
+.notes-part {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+/* Text inputs */
+.fuc-input,
+.note-input,
+.oper-type-select,
+.login-form .login-input {
+    background-color: var(--field);
+    border: 1px solid var(--border-field);
+    border-radius: var(--radius-sm);
+    color: var(--text-white);
+    outline: none;
+}
+
+.fuc-input:focus,
+.note-input:focus,
+.login-form .login-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+/* Primary buttons */
+.submit-btn,
+.add-oper-btn,
+.add-note-btn,
+.login-form .login-submit-btn {
+    background-color: var(--accent);
+    color: var(--text-white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.submit-btn:hover,
+.add-oper-btn:hover,
+.add-note-btn:hover,
+.login-form .login-submit-btn:hover {
+    background-color: var(--accent-hover);
+}
+
+/* Record rows */
+.oper-record,
+.note-record {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 12px;
+    background-color: var(--field);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+/* Small date / author badges */
+.oper-date,
+.note-date {
+    padding: 3px 8px;
+    border: 1px solid #8f8f8f;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-white);
+}
+
+/* Header buttons */
+.logout-btn,
+.login-btn {
+    background-color: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-field);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* ==========================================================================
+   Layout: header / main / footer
+   ========================================================================== */
+.page-head {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 0 24px;
+    background-color: var(--bg-head);
+    border-bottom: 1px solid var(--border);
+}
+
+.site-name {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: 60px;
+    border-bottom: 1px solid var(--border);
+}
+
+.header-left {
+    justify-self: start;
+}
+
+.page-name {
+    justify-self: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-white);
+}
+
+.header-right {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+}
+
+.site-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    height: 45px;
+    padding: 0 20px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.logout-form,
+.login-form-header {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.logout-btn:hover {
+    background-color: var(--danger-bg);
+    color: var(--danger-text);
+    border-color: var(--danger-border);
+}
+
+.login-btn:hover {
+    background-color: var(--accent);
+    color: var(--text-white);
+    border-color: var(--accent);
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    background-color: var(--field);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    background-color: var(--card);
+    color: var(--text-white);
+    border-color: var(--accent);
+}
+
+.nav-link.active {
+    background-color: var(--accent);
+    color: var(--text-white);
+    border-color: var(--accent);
+}
+
+.page-main {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    min-height: 0;
+    padding: 24px;
+    overflow: hidden;
+}
+
+.page-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    height: 40px;
+    background-color: var(--bg-head);
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+/* ==========================================================================
+   Toast
+   ========================================================================== */
+.toast-popup {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    gap: 10px;
+    padding: 15px 20px;
+    background-color: var(--card);
+    color: var(--text-white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+}
+
+.toast-ok-btn {
+    align-self: flex-end;
+    padding: 4px 8px;
+    background-color: var(--ok);
+    color: var(--text-white);
+    border: none;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.toast-toggle-checkbox {
+    display: none;
+}
+
+.toast-toggle-checkbox:checked ~ .toast-popup {
+    display: none;
+}
+
+/* ==========================================================================
+   Client checker: left column
+   ========================================================================== */
+.client-checker-window {
+    display: flex;
+    align-self: stretch;
+    width: 100%;
+    max-width: 1400px;
+    min-height: 0;
+    gap: 24px;
+}
+
+.user-info-part {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 350px;
+    gap: 20px;
+}
+
+.find-user-data {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px;
+}
+
+.user-data-label {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.user-data-label strong {
+    color: var(--text-white);
+}
+
+.find-user-search {
+    display: flex;
+    padding: 20px;
+}
+
+.find-user-part {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+}
+
+.fuc-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.fuc-input {
+    padding: 10px 12px;
+    font-size: 1rem;
+}
+
+.submit-btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Client checker: operations and notes
+   ========================================================================== */
+.note-trans-part {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    gap: 20px;
+}
+
+.transactions-part,
+.notes-part {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    padding: 20px;
+}
+
+.panel-title {
+    margin: 0 0 14px;
+    font-size: 1.1rem;
+    color: var(--text-white);
+}
+
+.note-oper-list {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    gap: 10px;
+    list-style: none;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.record-add {
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+.note-del,
+.oper-del {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.note-del {
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.oper-del {
+    align-items: center;
+}
+
+.oper-content,
+.note-content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.oper-content {
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.note-content {
+    flex: 1;
+}
+
+/* Delete buttons */
+.delete-oper-btn,
+.delete-note-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    background-color: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger-border);
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.delete-oper-btn:hover,
+.delete-note-btn:hover {
+    background-color: var(--danger-bg);
+}
+
+/* Add forms */
+#oper-form,
+#note-form {
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+
+.note-input {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+}
+
+.oper-type-select {
+    padding: 0 8px;
+}
+
+.add-oper-btn,
+.add-note-btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+}
+
+/* Operation colors */
+.oper-record.refund {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.oper-record.purchase {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.oper-amount {
+    font-weight: 600;
+}
+
+.oper-author {
+    padding: 2px 6px;
+    font-size: 0.8rem;
+    color: var(--text-white);
+}
+
+.empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* ==========================================================================
+   Login
+   ========================================================================== */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 36px 32px;
+    background-color: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.login-header {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.login-header h2 {
+    margin: 0 0 8px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--text-white);
+}
+
+.login-header p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 16px;
+}
+
+.login-form .form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.login-form .form-group label {
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.login-form .login-input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-form .login-submit-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+    font-size: 1rem;
+}
+
+/* ==========================================================================
+   Alerts (error is default, variants by message.tags)
+   ========================================================================== */
+.login-alerts {
+    margin-bottom: 20px;
+}
+
+.login-alert {
+    padding: 10px 14px;
+    background-color: var(--danger-bg);
+    color: var(--danger-text);
+    border: 1px solid var(--danger-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.login-alert-success {
+    background-color: #0f2e22;
+    color: #6ee7b7;
+    border-color: #065f46;
+}
+
+.login-alert-info {
+    background-color: #1e1b4b;
+    color: #a5b4fc;
+    border-color: #3730a3;
+}
+
+/* ==========================================================================
+   Narrow screens
+   ========================================================================== */
+@media (max-width: 900px) {
+    html, body,
+    .page-main {
+        overflow: auto;
+    }
+
+    .page-main {
+        align-items: flex-start;
+    }
+
+    .client-checker-window,
+    .note-trans-part {
+        flex-direction: column;
+    }
+
+    .user-info-part {
+        flex: 0 0 auto;
+    }
+
+    .transactions-part,
+    .notes-part {
+        min-height: 300px;
+    }
+}

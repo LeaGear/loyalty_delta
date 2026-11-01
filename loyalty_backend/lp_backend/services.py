@@ -32,7 +32,7 @@ def _get_actual_discount(total_spent) -> DiscountTier:
     return discount
 
 def _get_last_actual_operation_date(client_id) -> datetime | None:
-    last_operation = Operation.objects.filter(client_id=client_id).order_by('-created_at').first()
+    last_operation = Operation.objects.filter(client_id=client_id, is_voided=False).order_by('-created_at').first()
     if not last_operation:
         return None
     return last_operation.created_at
@@ -247,7 +247,7 @@ def delete_operation(operation_id, client_id, deleter_name):
     except Client.DoesNotExist:
         raise ClientNotFound(client_id)
     try:
-        operation = Operation.objects.get(id=operation_id, client=client)
+        operation = Operation.objects.get(id=operation_id, client=client, is_voided=False)
         operation.set_voided_status(deleter_name)
         last_operation_date = _get_last_actual_operation_date(client_id)
         client.set_last_operation_date(last_operation_date)

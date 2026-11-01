@@ -324,7 +324,6 @@ body {
     padding: 12px;
     font-size: 0.9rem;
     display: flex;
-    display-direction: column;
     align-items: center;
     flex-shrink: 0;
 }
